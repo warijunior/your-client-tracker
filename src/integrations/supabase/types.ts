@@ -14,7 +14,175 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      assessments: {
+        Row: {
+          arm: number | null
+          assessed_at: string
+          body_fat: number | null
+          chest: number | null
+          created_at: string
+          hips: number | null
+          id: string
+          notes: string | null
+          student_id: string
+          thigh: number | null
+          trainer_id: string
+          waist: number | null
+          weight: number | null
+        }
+        Insert: {
+          arm?: number | null
+          assessed_at?: string
+          body_fat?: number | null
+          chest?: number | null
+          created_at?: string
+          hips?: number | null
+          id?: string
+          notes?: string | null
+          student_id: string
+          thigh?: number | null
+          trainer_id: string
+          waist?: number | null
+          weight?: number | null
+        }
+        Update: {
+          arm?: number | null
+          assessed_at?: string
+          body_fat?: number | null
+          chest?: number | null
+          created_at?: string
+          hips?: number | null
+          id?: string
+          notes?: string | null
+          student_id?: string
+          thigh?: number | null
+          trainer_id?: string
+          waist?: number | null
+          weight?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessments_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      protocols: {
+        Row: {
+          active: boolean
+          content: string
+          created_at: string
+          id: string
+          student_id: string
+          title: string
+          trainer_id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          content: string
+          created_at?: string
+          id?: string
+          student_id: string
+          title: string
+          trainer_id: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          content?: string
+          created_at?: string
+          id?: string
+          student_id?: string
+          title?: string
+          trainer_id?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "protocols_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      students: {
+        Row: {
+          age: number | null
+          created_at: string
+          full_name: string
+          goal: string | null
+          health_history: string | null
+          height: number | null
+          id: string
+          notes: string | null
+          trainer_id: string
+          updated_at: string
+          weight: number | null
+        }
+        Insert: {
+          age?: number | null
+          created_at?: string
+          full_name: string
+          goal?: string | null
+          health_history?: string | null
+          height?: number | null
+          id?: string
+          notes?: string | null
+          trainer_id: string
+          updated_at?: string
+          weight?: number | null
+        }
+        Update: {
+          age?: number | null
+          created_at?: string
+          full_name?: string
+          goal?: string | null
+          health_history?: string | null
+          height?: number | null
+          id?: string
+          notes?: string | null
+          trainer_id?: string
+          updated_at?: string
+          weight?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
