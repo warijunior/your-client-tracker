@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [isStudentSignup, setIsStudentSignup] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -29,7 +30,8 @@ const Auth = () => {
         await signIn(email, password);
         toast({ title: "Bem-vindo de volta! 💪" });
       } else {
-        await signUp(email, password, fullName);
+        const role = isStudentSignup ? "student" : "admin";
+        await signUp(email, password, fullName, role);
         toast({ title: "Conta criada!", description: "Verifique seu email para confirmar." });
       }
     } catch (error: any) {
@@ -49,27 +51,47 @@ const Auth = () => {
           </div>
           <h1 className="text-2xl font-bold text-foreground">FitCoach Pro</h1>
           <p className="text-muted-foreground text-sm">
-            {isLogin ? "Entre na sua conta" : "Crie sua conta de treinador"}
+            {isLogin ? "Entre na sua conta" : isStudentSignup ? "Crie sua conta de aluno" : "Crie sua conta de treinador"}
           </p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {!isLogin && (
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm text-muted-foreground">Nome completo</Label>
-              <div className="relative">
-                <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="name"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Seu nome"
-                  className="pl-10 bg-secondary border-border"
-                  required={!isLogin}
-                />
+            <>
+              {/* Role toggle */}
+              <div className="flex rounded-lg bg-secondary p-1">
+                <button
+                  type="button"
+                  onClick={() => setIsStudentSignup(false)}
+                  className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${!isStudentSignup ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+                >
+                  Treinador
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsStudentSignup(true)}
+                  className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${isStudentSignup ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+                >
+                  Aluno
+                </button>
               </div>
-            </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-sm text-muted-foreground">Nome completo</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="name"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Seu nome"
+                    className="pl-10 bg-secondary border-border"
+                    required={!isLogin}
+                  />
+                </div>
+              </div>
+            </>
           )}
 
           <div className="space-y-2">

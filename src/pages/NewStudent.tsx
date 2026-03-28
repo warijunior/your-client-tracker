@@ -17,6 +17,7 @@ const NewStudent = () => {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     full_name: "",
+    email: "",
     age: "",
     weight: "",
     height: "",
@@ -32,6 +33,7 @@ const NewStudent = () => {
     const { error } = await supabase.from("students").insert({
       trainer_id: user.id,
       full_name: form.full_name,
+      email: form.email || null,
       age: form.age ? parseInt(form.age) : null,
       weight: form.weight ? parseFloat(form.weight) : null,
       height: form.height ? parseFloat(form.height) : null,
@@ -69,6 +71,18 @@ const NewStudent = () => {
             className="bg-secondary border-border"
             required
           />
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-muted-foreground">Email do aluno</Label>
+          <Input
+            type="email"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            placeholder="aluno@email.com (para acesso ao app)"
+            className="bg-secondary border-border"
+          />
+          <p className="text-xs text-muted-foreground">O aluno poderá criar conta com este email para fazer check-ins.</p>
         </div>
 
         <div className="grid grid-cols-3 gap-3">

@@ -1,14 +1,10 @@
 import { useAuth } from "@/contexts/AuthContext";
-import { Navigate } from "react-router-dom";
-import { ReactNode } from "react";
 import { useUserRole } from "@/hooks/useUserRole";
+import { Navigate } from "react-router-dom";
+import Dashboard from "@/pages/Dashboard";
+import StudentDashboard from "@/pages/StudentDashboard";
 
-interface Props {
-  children: ReactNode;
-  requiredRole?: "admin" | "student";
-}
-
-const ProtectedRoute = ({ children, requiredRole }: Props) => {
+const RoleRouter = () => {
   const { user, loading: authLoading } = useAuth();
   const { role, loading: roleLoading } = useUserRole();
 
@@ -22,12 +18,8 @@ const ProtectedRoute = ({ children, requiredRole }: Props) => {
 
   if (!user) return <Navigate to="/auth" replace />;
 
-  // If a specific role is required and user doesn't have it, redirect to their dashboard
-  if (requiredRole && role !== requiredRole) {
-    return <Navigate to="/" replace />;
-  }
-
-  return <>{children}</>;
+  if (role === "student") return <StudentDashboard />;
+  return <Dashboard />;
 };
 
-export default ProtectedRoute;
+export default RoleRouter;
