@@ -17,6 +17,7 @@ const NewStudent = () => {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     full_name: "",
+    email: "",
     age: "",
     weight: "",
     height: "",
