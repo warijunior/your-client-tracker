@@ -73,6 +73,18 @@ const NewStudent = () => {
           />
         </div>
 
+        <div className="space-y-2">
+          <Label className="text-muted-foreground">Email do aluno</Label>
+          <Input
+            type="email"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            placeholder="aluno@email.com (para acesso ao app)"
+            className="bg-secondary border-border"
+          />
+          <p className="text-xs text-muted-foreground">O aluno poderá criar conta com este email para fazer check-ins.</p>
+        </div>
+
         <div className="grid grid-cols-3 gap-3">
           <div className="space-y-2">
             <Label className="text-muted-foreground">Idade</Label>
