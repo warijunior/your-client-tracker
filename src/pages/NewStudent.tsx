@@ -33,6 +33,7 @@ const NewStudent = () => {
     const { error } = await supabase.from("students").insert({
       trainer_id: user.id,
       full_name: form.full_name,
+      email: form.email || null,
       age: form.age ? parseInt(form.age) : null,
       weight: form.weight ? parseFloat(form.weight) : null,
       height: form.height ? parseFloat(form.height) : null,
