@@ -14,6 +14,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      appointments: {
+        Row: {
+          appointment_date: string
+          created_at: string
+          description: string | null
+          end_time: string | null
+          id: string
+          start_time: string
+          status: string
+          student_id: string
+          title: string
+          trainer_id: string
+          updated_at: string
+        }
+        Insert: {
+          appointment_date: string
+          created_at?: string
+          description?: string | null
+          end_time?: string | null
+          id?: string
+          start_time: string
+          status?: string
+          student_id: string
+          title: string
+          trainer_id: string
+          updated_at?: string
+        }
+        Update: {
+          appointment_date?: string
+          created_at?: string
+          description?: string | null
+          end_time?: string | null
+          id?: string
+          start_time?: string
+          status?: string
+          student_id?: string
+          title?: string
+          trainer_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       assessments: {
         Row: {
           arm: number | null
@@ -111,6 +161,110 @@ export type Database = {
           },
         ]
       }
+      messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          read: boolean
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          read?: boolean
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          read?: boolean
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          link: string | null
+          message: string
+          read: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          link?: string | null
+          message: string
+          read?: boolean
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          link?: string | null
+          message?: string
+          read?: boolean
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          notes: string | null
+          paid_at: string | null
+          reference_month: string
+          status: string
+          student_id: string
+          trainer_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          reference_month: string
+          status?: string
+          student_id: string
+          trainer_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          reference_month?: string
+          status?: string
+          student_id?: string
+          trainer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -137,6 +291,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      progress_photos: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          notes: string | null
+          photo_url: string
+          student_id: string
+          taken_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          photo_url: string
+          student_id: string
+          taken_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          photo_url?: string
+          student_id?: string
+          taken_at?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "progress_photos_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       protocols: {
         Row: {
