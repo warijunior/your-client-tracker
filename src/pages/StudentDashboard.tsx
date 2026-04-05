@@ -7,14 +7,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dumbbell, LogOut, CheckCircle2, Calendar, TrendingUp, ChevronLeft, ChevronRight } from "lucide-react";
+import { Dumbbell, LogOut, CheckCircle2, Calendar, TrendingUp, ChevronLeft, ChevronRight, MessageCircle, Camera, DollarSign } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import NotificationBell from "@/components/NotificationBell";
+import ChatWindow from "@/components/ChatWindow";
+import PhotoGallery from "@/components/PhotoGallery";
 
 interface StudentRecord {
   id: string;
   full_name: string;
   goal: string | null;
   weight: number | null;
+  trainer_id: string;
 }
 
 interface Checkin {
@@ -33,13 +37,33 @@ interface Protocol {
   active: boolean;
 }
 
+interface Appointment {
+  id: string;
+  title: string;
+  appointment_date: string;
+  start_time: string;
+  end_time: string | null;
+  status: string;
+  description: string | null;
+}
+
+interface Payment {
+  id: string;
+  amount: number;
+  reference_month: string;
+  status: string;
+}
+
 const StudentDashboard = () => {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
   const [student, setStudent] = useState<StudentRecord | null>(null);
   const [checkins, setCheckins] = useState<Checkin[]>([]);
   const [protocols, setProtocols] = useState<Protocol[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showChat, setShowChat] = useState(false);
 
   // Check-in form
   const [trainingDone, setTrainingDone] = useState(false);
@@ -56,10 +80,9 @@ const StudentDashboard = () => {
   }, [user]);
 
   const fetchData = async () => {
-    // Fetch student record linked to this user
     const { data: studentData } = await supabase
       .from("students")
-      .select("id, full_name, goal, weight")
+      .select("id, full_name, goal, weight, trainer_id")
       .eq("user_id", user!.id)
       .limit(1)
       .single();
@@ -69,18 +92,15 @@ const StudentDashboard = () => {
       await Promise.all([
         fetchCheckins(studentData.id),
         fetchProtocols(studentData.id),
+        fetchAppointments(studentData.id),
+        fetchPayments(studentData.id),
       ]);
     }
     setLoading(false);
   };
 
   const fetchCheckins = async (studentId: string) => {
-    const { data } = await supabase
-      .from("checkins")
-      .select("*")
-      .eq("student_id", studentId)
-      .order("check_date", { ascending: false });
-
+    const { data } = await supabase.from("checkins").select("*").eq("student_id", studentId).order("check_date", { ascending: false });
     if (data) {
       setCheckins(data);
       const today = new Date().toISOString().split("T")[0];
@@ -95,14 +115,19 @@ const StudentDashboard = () => {
   };
 
   const fetchProtocols = async (studentId: string) => {
-    const { data } = await supabase
-      .from("protocols")
-      .select("*")
-      .eq("student_id", studentId)
-      .eq("active", true)
-      .order("created_at", { ascending: false });
-
+    const { data } = await supabase.from("protocols").select("*").eq("student_id", studentId).eq("active", true).order("created_at", { ascending: false });
     if (data) setProtocols(data);
+  };
+
+  const fetchAppointments = async (studentId: string) => {
+    const today = new Date().toISOString().split("T")[0];
+    const { data } = await supabase.from("appointments").select("*").eq("student_id", studentId).gte("appointment_date", today).order("appointment_date", { ascending: true });
+    if (data) setAppointments(data);
+  };
+
+  const fetchPayments = async (studentId: string) => {
+    const { data } = await supabase.from("payments").select("*").eq("student_id", studentId).order("reference_month", { ascending: false }).limit(6);
+    if (data) setPayments(data);
   };
 
   const handleCheckin = async () => {
@@ -119,10 +144,7 @@ const StudentDashboard = () => {
     };
 
     if (todayCheckin) {
-      const { error } = await supabase
-        .from("checkins")
-        .update({ training_done: trainingDone, weight: weight ? parseFloat(weight) : null, notes: notes || null })
-        .eq("id", todayCheckin.id);
+      const { error } = await supabase.from("checkins").update({ training_done: trainingDone, weight: weight ? parseFloat(weight) : null, notes: notes || null }).eq("id", todayCheckin.id);
       if (error) {
         toast({ title: "Erro ao atualizar", description: error.message, variant: "destructive" });
       } else {
@@ -144,34 +166,26 @@ const StudentDashboard = () => {
   // Calendar helpers
   const getDaysInMonth = (date: Date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
   const getFirstDayOfMonth = (date: Date) => new Date(date.getFullYear(), date.getMonth(), 1).getDay();
-
   const checkinDates = new Set(checkins.filter((c) => c.training_done).map((c) => c.check_date));
-
   const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
   const dayNames = ["D", "S", "T", "Q", "Q", "S", "S"];
 
-  // Stats
   const now = new Date();
-  const currentMonthCheckins = checkins.filter((c) => {
-    const d = new Date(c.check_date);
-    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear() && c.training_done;
-  });
-  const currentYearCheckins = checkins.filter((c) => {
-    const d = new Date(c.check_date);
-    return d.getFullYear() === now.getFullYear() && c.training_done;
-  });
+  const currentMonthCheckins = checkins.filter((c) => { const d = new Date(c.check_date); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear() && c.training_done; });
+  const currentYearCheckins = checkins.filter((c) => { const d = new Date(c.check_date); return d.getFullYear() === now.getFullYear() && c.training_done; });
 
-  // Streak
   let streak = 0;
   const sortedDates = [...checkinDates].sort().reverse();
   const today = new Date().toISOString().split("T")[0];
   for (let i = 0; i < sortedDates.length; i++) {
-    const expected = new Date();
-    expected.setDate(expected.getDate() - i);
-    if (sortedDates[i] === expected.toISOString().split("T")[0]) {
-      streak++;
-    } else break;
+    const expected = new Date(); expected.setDate(expected.getDate() - i);
+    if (sortedDates[i] === expected.toISOString().split("T")[0]) { streak++; } else break;
   }
+
+  const formatMonth = (m: string) => {
+    const [y, mo] = m.split("-");
+    return `${monthNames[parseInt(mo) - 1]}/${y}`;
+  };
 
   if (loading) {
     return (
@@ -188,10 +202,21 @@ const StudentDashboard = () => {
           <Dumbbell className="w-12 h-12 text-muted-foreground mx-auto" />
           <h2 className="text-lg font-bold text-foreground">Conta não vinculada</h2>
           <p className="text-muted-foreground text-sm">Seu treinador precisa vincular seu email à sua ficha de aluno.</p>
-          <Button variant="ghost" onClick={signOut} className="text-muted-foreground">
-            <LogOut className="w-4 h-4 mr-2" /> Sair
-          </Button>
+          <Button variant="ghost" onClick={signOut} className="text-muted-foreground"><LogOut className="w-4 h-4 mr-2" /> Sair</Button>
         </div>
+      </div>
+    );
+  }
+
+  // Chat full screen
+  if (showChat) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <ChatWindow
+          recipientId={student.trainer_id}
+          recipientName="Meu Treinador"
+          onBack={() => setShowChat(false)}
+        />
       </div>
     );
   }
@@ -208,9 +233,15 @@ const StudentDashboard = () => {
               <p className="text-xs text-muted-foreground">{student.goal ? `Objetivo: ${student.goal}` : "FitCoach Pro"}</p>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={signOut}>
-            <LogOut className="w-5 h-5 text-muted-foreground" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" onClick={() => setShowChat(true)}>
+              <MessageCircle className="w-5 h-5 text-primary" />
+            </Button>
+            <NotificationBell />
+            <Button variant="ghost" size="icon" onClick={signOut}>
+              <LogOut className="w-5 h-5 text-muted-foreground" />
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -231,58 +262,55 @@ const StudentDashboard = () => {
           </div>
         </div>
 
+        {/* Upcoming Appointments */}
+        {appointments.length > 0 && (
+          <div className="glass-card p-4 space-y-2">
+            <h3 className="text-sm font-semibold text-muted-foreground">📅 Próximos compromissos</h3>
+            {appointments.slice(0, 2).map((a) => (
+              <div key={a.id} className="flex items-center justify-between py-1">
+                <p className="text-sm font-medium text-foreground">{a.title}</p>
+                <p className="text-xs text-muted-foreground">{new Date(a.appointment_date).toLocaleDateString("pt-BR")} {a.start_time.slice(0, 5)}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
         <Tabs defaultValue="checkin" className="w-full">
-          <TabsList className="w-full bg-secondary">
-            <TabsTrigger value="checkin" className="flex-1 text-xs">
-              <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Check-in
+          <TabsList className="w-full bg-secondary grid grid-cols-5">
+            <TabsTrigger value="checkin" className="text-xs">
+              <CheckCircle2 className="w-3.5 h-3.5" />
             </TabsTrigger>
-            <TabsTrigger value="calendar" className="flex-1 text-xs">
-              <Calendar className="w-3.5 h-3.5 mr-1" /> Calendário
+            <TabsTrigger value="calendar" className="text-xs">
+              <Calendar className="w-3.5 h-3.5" />
             </TabsTrigger>
-            <TabsTrigger value="protocols" className="flex-1 text-xs">
-              <TrendingUp className="w-3.5 h-3.5 mr-1" /> Protocolos
+            <TabsTrigger value="protocols" className="text-xs">
+              <TrendingUp className="w-3.5 h-3.5" />
+            </TabsTrigger>
+            <TabsTrigger value="photos" className="text-xs">
+              <Camera className="w-3.5 h-3.5" />
+            </TabsTrigger>
+            <TabsTrigger value="payments" className="text-xs">
+              <DollarSign className="w-3.5 h-3.5" />
             </TabsTrigger>
           </TabsList>
 
           {/* Check-in Tab */}
           <TabsContent value="checkin" className="mt-4 space-y-4">
             <div className="glass-card p-5 space-y-4">
-              <h3 className="font-semibold text-foreground">
-                {todayCheckin ? "✅ Check-in de hoje" : "📋 Registrar check-in"}
-              </h3>
-
+              <h3 className="font-semibold text-foreground">{todayCheckin ? "✅ Check-in de hoje" : "📋 Registrar check-in"}</h3>
               <div className="flex items-center justify-between p-3 rounded-lg bg-secondary">
                 <Label className="text-sm text-foreground">Treino feito hoje?</Label>
                 <Switch checked={trainingDone} onCheckedChange={setTrainingDone} />
               </div>
-
               <div className="space-y-2">
                 <Label className="text-sm text-muted-foreground">Peso atual (kg)</Label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={weight}
-                  onChange={(e) => setWeight(e.target.value)}
-                  placeholder="Ex: 78.5"
-                  className="bg-secondary border-border"
-                />
+                <Input type="number" step="0.1" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="Ex: 78.5" className="bg-secondary border-border" />
               </div>
-
               <div className="space-y-2">
                 <Label className="text-sm text-muted-foreground">Notas do dia</Label>
-                <Textarea
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Como foi o treino? Disposição, dores, observações..."
-                  className="bg-secondary border-border min-h-[80px]"
-                />
+                <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Como foi o treino? Disposição, dores..." className="bg-secondary border-border min-h-[80px]" />
               </div>
-
-              <Button
-                onClick={handleCheckin}
-                disabled={submitting}
-                className="w-full gradient-primary text-primary-foreground font-semibold h-12 glow-primary"
-              >
+              <Button onClick={handleCheckin} disabled={submitting} className="w-full gradient-primary text-primary-foreground font-semibold h-12 glow-primary">
                 {submitting ? "Salvando..." : todayCheckin ? "Atualizar check-in" : "Registrar check-in"}
               </Button>
             </div>
@@ -292,64 +320,34 @@ const StudentDashboard = () => {
           <TabsContent value="calendar" className="mt-4">
             <div className="glass-card p-5">
               <div className="flex items-center justify-between mb-4">
-                <Button variant="ghost" size="icon" onClick={() => {
-                  const prev = new Date(calendarMonth);
-                  prev.setMonth(prev.getMonth() - 1);
-                  setCalendarMonth(prev);
-                }}>
+                <Button variant="ghost" size="icon" onClick={() => { const prev = new Date(calendarMonth); prev.setMonth(prev.getMonth() - 1); setCalendarMonth(prev); }}>
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
-                <span className="font-semibold text-foreground">
-                  {monthNames[calendarMonth.getMonth()]} {calendarMonth.getFullYear()}
-                </span>
-                <Button variant="ghost" size="icon" onClick={() => {
-                  const next = new Date(calendarMonth);
-                  next.setMonth(next.getMonth() + 1);
-                  setCalendarMonth(next);
-                }}>
+                <span className="font-semibold text-foreground">{monthNames[calendarMonth.getMonth()]} {calendarMonth.getFullYear()}</span>
+                <Button variant="ghost" size="icon" onClick={() => { const next = new Date(calendarMonth); next.setMonth(next.getMonth() + 1); setCalendarMonth(next); }}>
                   <ChevronRight className="w-4 h-4" />
                 </Button>
               </div>
-
               <div className="grid grid-cols-7 gap-1 text-center">
-                {dayNames.map((d, i) => (
-                  <div key={i} className="text-xs text-muted-foreground py-1">{d}</div>
-                ))}
-                {Array.from({ length: getFirstDayOfMonth(calendarMonth) }).map((_, i) => (
-                  <div key={`empty-${i}`} />
-                ))}
+                {dayNames.map((d, i) => (<div key={i} className="text-xs text-muted-foreground py-1">{d}</div>))}
+                {Array.from({ length: getFirstDayOfMonth(calendarMonth) }).map((_, i) => (<div key={`empty-${i}`} />))}
                 {Array.from({ length: getDaysInMonth(calendarMonth) }).map((_, i) => {
                   const day = i + 1;
                   const dateStr = `${calendarMonth.getFullYear()}-${String(calendarMonth.getMonth() + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
                   const done = checkinDates.has(dateStr);
                   const isToday = dateStr === today;
-
                   return (
-                    <div
-                      key={day}
-                      className={`aspect-square flex items-center justify-center rounded-lg text-xs font-medium transition-colors ${
-                        done
-                          ? "bg-primary/20 text-primary"
-                          : isToday
-                          ? "bg-secondary text-foreground ring-1 ring-primary/50"
-                          : "text-muted-foreground"
-                      }`}
-                    >
+                    <div key={day} className={`aspect-square flex items-center justify-center rounded-lg text-xs font-medium transition-colors ${done ? "bg-primary/20 text-primary" : isToday ? "bg-secondary text-foreground ring-1 ring-primary/50" : "text-muted-foreground"}`}>
                       {done ? "✓" : day}
                     </div>
                   );
                 })}
               </div>
-
-              {/* Monthly summary */}
               <div className="mt-4 pt-4 border-t border-border">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Treinos no mês</span>
                   <span className="font-semibold text-foreground">
-                    {checkins.filter((c) => {
-                      const d = new Date(c.check_date);
-                      return d.getMonth() === calendarMonth.getMonth() && d.getFullYear() === calendarMonth.getFullYear() && c.training_done;
-                    }).length} dias
+                    {checkins.filter((c) => { const d = new Date(c.check_date); return d.getMonth() === calendarMonth.getMonth() && d.getFullYear() === calendarMonth.getFullYear() && c.training_done; }).length} dias
                   </span>
                 </div>
               </div>
@@ -359,9 +357,7 @@ const StudentDashboard = () => {
           {/* Protocols Tab */}
           <TabsContent value="protocols" className="mt-4 space-y-3">
             {protocols.length === 0 ? (
-              <p className="text-center py-8 text-muted-foreground text-sm">
-                Nenhum protocolo ativo. Seu treinador irá criar para você.
-              </p>
+              <p className="text-center py-8 text-muted-foreground text-sm">Nenhum protocolo ativo.</p>
             ) : (
               protocols.map((p) => (
                 <div key={p.id} className="glass-card p-4 space-y-2">
@@ -370,6 +366,30 @@ const StudentDashboard = () => {
                   </span>
                   <h3 className="font-semibold text-foreground">{p.title}</h3>
                   <p className="text-sm text-secondary-foreground whitespace-pre-wrap">{p.content}</p>
+                </div>
+              ))
+            )}
+          </TabsContent>
+
+          {/* Photos Tab */}
+          <TabsContent value="photos" className="mt-4">
+            <PhotoGallery studentId={student.id} canUpload={true} />
+          </TabsContent>
+
+          {/* Payments Tab */}
+          <TabsContent value="payments" className="mt-4 space-y-3">
+            {payments.length === 0 ? (
+              <p className="text-center py-8 text-muted-foreground text-sm">Nenhum pagamento registrado.</p>
+            ) : (
+              payments.map((p) => (
+                <div key={p.id} className="glass-card p-3 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-foreground">R$ {p.amount.toFixed(2)}</p>
+                    <p className="text-xs text-muted-foreground">{formatMonth(p.reference_month)}</p>
+                  </div>
+                  <span className={`text-xs px-2 py-1 rounded-full ${p.status === "paid" ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"}`}>
+                    {p.status === "paid" ? "✅ Pago" : "⏳ Pendente"}
+                  </span>
                 </div>
               ))
             )}

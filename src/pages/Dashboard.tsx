@@ -4,8 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, LogOut, Dumbbell, Users, TrendingUp } from "lucide-react";
+import { Plus, Search, LogOut, Dumbbell, Users, TrendingUp, Calendar, DollarSign } from "lucide-react";
 import StudentCard from "@/components/StudentCard";
+import NotificationBell from "@/components/NotificationBell";
 
 interface Student {
   id: string;
@@ -16,15 +17,27 @@ interface Student {
   goal: string | null;
 }
 
+interface UpcomingAppointment {
+  id: string;
+  title: string;
+  appointment_date: string;
+  start_time: string;
+  student_name: string;
+}
+
 const Dashboard = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [students, setStudents] = useState<Student[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [upcomingAppointments, setUpcomingAppointments] = useState<UpcomingAppointment[]>([]);
+  const [pendingPayments, setPendingPayments] = useState(0);
 
   useEffect(() => {
     fetchStudents();
+    fetchUpcoming();
+    fetchPendingPayments();
   }, []);
 
   const fetchStudents = async () => {
@@ -32,9 +45,44 @@ const Dashboard = () => {
       .from("students")
       .select("id, full_name, age, weight, height, goal")
       .order("created_at", { ascending: false });
-
     if (!error && data) setStudents(data);
     setLoading(false);
+  };
+
+  const fetchUpcoming = async () => {
+    const today = new Date().toISOString().split("T")[0];
+    const { data } = await supabase
+      .from("appointments")
+      .select("id, title, appointment_date, start_time, student_id")
+      .gte("appointment_date", today)
+      .eq("status", "scheduled")
+      .order("appointment_date", { ascending: true })
+      .limit(3);
+
+    if (data && data.length > 0) {
+      // Get student names
+      const studentIds = [...new Set(data.map((a) => a.student_id))];
+      const { data: studentsData } = await supabase
+        .from("students")
+        .select("id, full_name")
+        .in("id", studentIds);
+
+      const nameMap = new Map(studentsData?.map((s) => [s.id, s.full_name]) || []);
+      setUpcomingAppointments(
+        data.map((a) => ({
+          ...a,
+          student_name: nameMap.get(a.student_id) || "—",
+        }))
+      );
+    }
+  };
+
+  const fetchPendingPayments = async () => {
+    const { count } = await supabase
+      .from("payments")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "pending");
+    setPendingPayments(count || 0);
   };
 
   const filtered = students.filter((s) =>
@@ -50,26 +98,49 @@ const Dashboard = () => {
             <Dumbbell className="w-6 h-6 text-primary" />
             <h1 className="text-lg font-bold text-foreground">FitCoach Pro</h1>
           </div>
-          <Button variant="ghost" size="icon" onClick={signOut}>
-            <LogOut className="w-5 h-5 text-muted-foreground" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <NotificationBell />
+            <Button variant="ghost" size="icon" onClick={signOut}>
+              <LogOut className="w-5 h-5 text-muted-foreground" />
+            </Button>
+          </div>
         </div>
       </header>
 
       <div className="max-w-lg mx-auto p-4 space-y-6">
         {/* Stats */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           <div className="glass-card p-4 space-y-1">
             <Users className="w-5 h-5 text-primary" />
             <p className="text-2xl font-bold text-foreground">{students.length}</p>
-            <p className="text-xs text-muted-foreground">Alunos ativos</p>
+            <p className="text-xs text-muted-foreground">Alunos</p>
           </div>
           <div className="glass-card p-4 space-y-1">
-            <TrendingUp className="w-5 h-5 text-primary" />
-            <p className="text-2xl font-bold text-foreground">—</p>
-            <p className="text-xs text-muted-foreground">Avaliações este mês</p>
+            <Calendar className="w-5 h-5 text-primary" />
+            <p className="text-2xl font-bold text-foreground">{upcomingAppointments.length}</p>
+            <p className="text-xs text-muted-foreground">Agendamentos</p>
+          </div>
+          <div className="glass-card p-4 space-y-1">
+            <DollarSign className="w-5 h-5 text-destructive" />
+            <p className="text-2xl font-bold text-foreground">{pendingPayments}</p>
+            <p className="text-xs text-muted-foreground">Pgtos pendentes</p>
           </div>
         </div>
+
+        {/* Upcoming Appointments */}
+        {upcomingAppointments.length > 0 && (
+          <div className="space-y-2">
+            <h2 className="text-sm font-semibold text-muted-foreground">📅 Próximos agendamentos</h2>
+            {upcomingAppointments.map((a) => (
+              <div key={a.id} className="glass-card p-3 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-foreground">{a.title}</p>
+                  <p className="text-xs text-muted-foreground">{a.student_name} • {new Date(a.appointment_date).toLocaleDateString("pt-BR")} às {a.start_time.slice(0, 5)}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Search */}
         <div className="relative">
