@@ -1,3 +1,3 @@
-# Welcome to your Lovable project
+# Bem-vindo ao meu projeto!
 
-TODO: Document your project here
+TODO: Breve informações gerais referente projeto
