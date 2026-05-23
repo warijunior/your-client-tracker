@@ -1,6 +1,6 @@
 # 🚀 Your Client Tracker
 
-Sistema desenvolvido em **FastAPI** para gerenciamento e acompanhamento de clientes.
+Sistema desenvolvido em **FastAPI** para gerenciamento e acompanhamento de clientes fitness que pratica musculação.
 
 ---
 
