@@ -190,7 +190,7 @@ pip install fastapi uvicorn sqlalchemy pydantic python-dotenv
 
 # 👨‍💻 Autor
 
-Desenvolvido por Warley Junior.
+Desenvolvido por Maviael sousa santos Junior.
 
 GitHub:
 https://github.com/warijunior
