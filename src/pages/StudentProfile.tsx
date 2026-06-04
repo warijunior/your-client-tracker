@@ -284,7 +284,18 @@ const StudentProfile = () => {
                       </span>
                       {p.active && <span className="w-2 h-2 rounded-full bg-primary" />}
                     </div>
-                    <span className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString("pt-BR")}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString("pt-BR")}</span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => handleDeleteProtocol(p)}
+                        aria-label="Excluir protocolo"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                   <h3 className="font-semibold text-foreground">{p.title}</h3>
                   <p className="text-sm text-secondary-foreground whitespace-pre-wrap">{p.content}</p>
