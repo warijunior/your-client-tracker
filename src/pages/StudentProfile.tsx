@@ -4,7 +4,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, User, Activity, FileText, Plus, Calendar, Camera, DollarSign, MessageCircle } from "lucide-react";
+import { ArrowLeft, User, Activity, FileText, Plus, Calendar, Camera, DollarSign, MessageCircle, Trash2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import AssessmentForm from "@/components/AssessmentForm";
 import ProtocolForm from "@/components/ProtocolForm";
 import WeightChart from "@/components/WeightChart";
@@ -93,6 +94,20 @@ const StudentProfile = () => {
   const fetchProtocols = async () => {
     const { data } = await supabase.from("protocols").select("*").eq("student_id", id!).order("created_at", { ascending: false });
     if (data) setProtocols(data);
+  };
+
+  const { toast } = useToast();
+
+  const handleDeleteProtocol = async (p: Protocol) => {
+    const label = p.type === "training" ? "treino" : "dieta";
+    if (!window.confirm(`Excluir ${label} "${p.title}"? Esta ação não pode ser desfeita.`)) return;
+    const { error } = await supabase.from("protocols").delete().eq("id", p.id);
+    if (error) {
+      toast({ title: "Erro ao excluir", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: `${label === "treino" ? "Treino" : "Dieta"} excluído ✅` });
+      fetchProtocols();
+    }
   };
 
   const fetchAppointments = async () => {
@@ -269,7 +284,18 @@ const StudentProfile = () => {
                       </span>
                       {p.active && <span className="w-2 h-2 rounded-full bg-primary" />}
                     </div>
-                    <span className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString("pt-BR")}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString("pt-BR")}</span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => handleDeleteProtocol(p)}
+                        aria-label="Excluir protocolo"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                   <h3 className="font-semibold text-foreground">{p.title}</h3>
                   <p className="text-sm text-secondary-foreground whitespace-pre-wrap">{p.content}</p>
