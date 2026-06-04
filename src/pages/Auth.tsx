@@ -53,9 +53,9 @@ const Auth = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl gradient-primary glow-primary">
             <Dumbbell className="w-8 h-8 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">FitCoach Pro</h1>
+          <h1 className="text-2xl font-bold text-foreground">XConsultoriaa-Esportiva</h1>
           <p className="text-muted-foreground text-sm">
-            {isLogin ? "Entre na sua conta" : isStudentSignup ? "Crie sua conta de aluno" : "Crie sua conta de treinador"}
+            {isLogin ? "Entre na sua conta" : "Crie sua conta de aluno"}
           </p>
         </div>
 
@@ -63,22 +63,8 @@ const Auth = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           {!isLogin && (
             <>
-              {/* Role toggle */}
-              <div className="flex rounded-lg bg-secondary p-1">
-                <button
-                  type="button"
-                  onClick={() => setIsStudentSignup(false)}
-                  className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${!isStudentSignup ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
-                >
-                  Treinador
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsStudentSignup(true)}
-                  className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${isStudentSignup ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
-                >
-                  Aluno
-                </button>
+              <div className="rounded-lg bg-secondary/50 border border-border p-3 text-xs text-muted-foreground">
+                Apenas alunos podem se cadastrar por aqui. Contas de treinador são criadas internamente pela administração.
               </div>
 
               <div className="space-y-2">
@@ -97,6 +83,7 @@ const Auth = () => {
               </div>
             </>
           )}
+
 
           <div className="space-y-2">
             <Label htmlFor="email" className="text-sm text-muted-foreground">Email</Label>
