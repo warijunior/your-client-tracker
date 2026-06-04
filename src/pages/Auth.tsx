@@ -9,7 +9,6 @@ import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [isStudentSignup, setIsStudentSignup] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -30,9 +29,13 @@ const Auth = () => {
         await signIn(email, password);
         toast({ title: "Bem-vindo de volta! 💪" });
       } else {
-        const role = isStudentSignup ? "student" : "admin";
-        await signUp(email, password, fullName, role);
-        toast({ title: "Conta criada!", description: "Verifique seu email para confirmar." });
+        // Cadastro público é sempre como aluno. O papel real é definido pelo backend:
+        // só vira aluno vinculado se o email já tiver sido cadastrado pelo treinador.
+        await signUp(email, password, fullName, "student");
+        toast({
+          title: "Conta criada!",
+          description: "Se o seu email foi cadastrado pelo seu treinador, sua conta já está vinculada.",
+        });
       }
     } catch (error: any) {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
@@ -40,6 +43,7 @@ const Auth = () => {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
