@@ -96,7 +96,7 @@ const Dashboard = () => {
         <div className="flex items-center justify-between max-w-lg mx-auto">
           <div className="flex items-center gap-2">
             <Dumbbell className="w-6 h-6 text-primary" />
-            <h1 className="text-lg font-bold text-foreground">FitCoach Pro</h1>
+            <h1 className="text-lg font-bold text-foreground">XConsultoriaa-Esportiva</h1>
           </div>
           <div className="flex items-center gap-1">
             <NotificationBell />

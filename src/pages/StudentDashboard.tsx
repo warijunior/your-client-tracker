@@ -230,7 +230,7 @@ const StudentDashboard = () => {
             <Dumbbell className="w-6 h-6 text-primary" />
             <div>
               <h1 className="text-sm font-bold text-foreground">Olá, {student.full_name.split(" ")[0]}!</h1>
-              <p className="text-xs text-muted-foreground">{student.goal ? `Objetivo: ${student.goal}` : "FitCoach Pro"}</p>
+              <p className="text-xs text-muted-foreground">{student.goal ? `Objetivo: ${student.goal}` : "XConsultoriaa-Esportiva"}</p>
             </div>
           </div>
           <div className="flex items-center gap-1">
