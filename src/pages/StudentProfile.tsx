@@ -96,6 +96,20 @@ const StudentProfile = () => {
     if (data) setProtocols(data);
   };
 
+  const { toast } = useToast();
+
+  const handleDeleteProtocol = async (p: Protocol) => {
+    const label = p.type === "training" ? "treino" : "dieta";
+    if (!window.confirm(`Excluir ${label} "${p.title}"? Esta ação não pode ser desfeita.`)) return;
+    const { error } = await supabase.from("protocols").delete().eq("id", p.id);
+    if (error) {
+      toast({ title: "Erro ao excluir", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: `${label === "treino" ? "Treino" : "Dieta"} excluído ✅` });
+      fetchProtocols();
+    }
+  };
+
   const fetchAppointments = async () => {
     const { data } = await supabase
       .from("appointments")
