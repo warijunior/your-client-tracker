@@ -5,7 +5,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 
 interface Props {
   children: ReactNode;
-  requiredRole?: "admin" | "student";
+  requiredRole?: "admin" | "student" | "staff";
 }
 
 const ProtectedRoute = ({ children, requiredRole }: Props) => {
@@ -23,8 +23,14 @@ const ProtectedRoute = ({ children, requiredRole }: Props) => {
   if (!user) return <Navigate to="/auth" replace />;
 
   // If a specific role is required and user doesn't have it, redirect to their dashboard
-  if (requiredRole && role !== requiredRole) {
-    return <Navigate to="/" replace />;
+  if (requiredRole) {
+    const ok =
+      requiredRole === "staff"
+        ? role === "admin" || role === "trainer"
+        : requiredRole === "admin"
+          ? role === "admin" || role === "trainer"
+          : role === requiredRole;
+    if (!ok) return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;

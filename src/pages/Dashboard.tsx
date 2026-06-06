@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, LogOut, Dumbbell, Users, TrendingUp, Calendar, DollarSign } from "lucide-react";
+import { Plus, Search, LogOut, Dumbbell, Users, TrendingUp, Calendar, DollarSign, UserPlus } from "lucide-react";
 import StudentCard from "@/components/StudentCard";
 import NotificationBell from "@/components/NotificationBell";
 
@@ -27,6 +28,7 @@ interface UpcomingAppointment {
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
+  const { isAdmin } = useUserRole();
   const navigate = useNavigate();
   const [students, setStudents] = useState<Student[]>([]);
   const [search, setSearch] = useState("");
@@ -100,6 +102,11 @@ const Dashboard = () => {
           </div>
           <div className="flex items-center gap-1">
             <NotificationBell />
+            {isAdmin && (
+              <Button variant="ghost" size="icon" onClick={() => navigate("/trainers/invite")} title="Convidar treinador">
+                <UserPlus className="w-5 h-5 text-primary" />
+              </Button>
+            )}
             <Button variant="ghost" size="icon" onClick={signOut}>
               <LogOut className="w-5 h-5 text-muted-foreground" />
             </Button>
