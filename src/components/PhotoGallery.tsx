@@ -24,6 +24,11 @@ const categoryLabels: Record<string, string> = {
   general: "Geral",
 };
 
+const extractPath = (urlOrPath: string) => {
+  const m = urlOrPath.match(/progress-photos\/(.+)$/);
+  return m ? m[1] : urlOrPath;
+};
+
 const PhotoGallery = ({ studentId, canUpload = true }: Props) => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [showUpload, setShowUpload] = useState(false);
@@ -39,7 +44,14 @@ const PhotoGallery = ({ studentId, canUpload = true }: Props) => {
       .select("*")
       .eq("student_id", studentId)
       .order("taken_at", { ascending: false });
-    if (data) setPhotos(data);
+    if (!data) return;
+    const paths = data.map((p) => extractPath(p.photo_url));
+    const { data: signed } = await supabase.storage
+      .from("progress-photos")
+      .createSignedUrls(paths, 3600);
+    setPhotos(
+      data.map((p, i) => ({ ...p, photo_url: signed?.[i]?.signedUrl || p.photo_url }))
+    );
   };
 
   return (

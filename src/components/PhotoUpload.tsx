@@ -53,12 +53,10 @@ const PhotoUpload = ({ studentId, onClose, onSaved }: Props) => {
       return;
     }
 
-    const { data: urlData } = supabase.storage.from("progress-photos").getPublicUrl(path);
-
     const { error } = await supabase.from("progress_photos").insert({
       student_id: studentId,
       uploaded_by: user.id,
-      photo_url: urlData.publicUrl,
+      photo_url: path,
       category,
       notes: notes || null,
       taken_at: takenAt,
