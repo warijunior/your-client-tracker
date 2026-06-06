@@ -19,7 +19,8 @@ const RoleRouter = () => {
   if (!user) return <Navigate to="/auth" replace />;
 
   if (role === "student") return <StudentDashboard />;
-  return <Dashboard />;
+  if (role === "admin" || role === "trainer") return <Dashboard />;
+  return <StudentDashboard />;
 };
 
 export default RoleRouter;
