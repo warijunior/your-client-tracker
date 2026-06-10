@@ -9,6 +9,10 @@ import Auth from "./pages/Auth";
 import NewStudent from "./pages/NewStudent";
 import StudentProfile from "./pages/StudentProfile";
 import InviteTrainer from "./pages/InviteTrainer";
+import ExerciseLibrary from "./pages/ExerciseLibrary";
+import StudentWorkouts from "./pages/StudentWorkouts";
+import WorkoutEditor from "./pages/WorkoutEditor";
+import MyWorkouts from "./pages/MyWorkouts";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RoleRouter from "./components/RoleRouter";
 
@@ -26,6 +30,10 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/students/new" element={<ProtectedRoute requiredRole="admin"><NewStudent /></ProtectedRoute>} />
             <Route path="/students/:id" element={<ProtectedRoute requiredRole="admin"><StudentProfile /></ProtectedRoute>} />
+            <Route path="/students/:id/workouts" element={<ProtectedRoute requiredRole="staff"><StudentWorkouts /></ProtectedRoute>} />
+            <Route path="/workouts/:workoutId" element={<ProtectedRoute requiredRole="staff"><WorkoutEditor /></ProtectedRoute>} />
+            <Route path="/exercises" element={<ProtectedRoute requiredRole="staff"><ExerciseLibrary /></ProtectedRoute>} />
+            <Route path="/my-workouts" element={<ProtectedRoute requiredRole="student"><MyWorkouts /></ProtectedRoute>} />
             <Route path="/trainers/invite" element={<ProtectedRoute requiredRole="admin"><InviteTrainer /></ProtectedRoute>} />
 
             <Route path="*" element={<NotFound />} />

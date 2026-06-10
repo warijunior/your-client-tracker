@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, User, Activity, FileText, Plus, Calendar, Camera, DollarSign, MessageCircle, Trash2 } from "lucide-react";
+import { ArrowLeft, User, Activity, FileText, Plus, Calendar, Camera, DollarSign, MessageCircle, Trash2, Dumbbell } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import AssessmentForm from "@/components/AssessmentForm";
 import ProtocolForm from "@/components/ProtocolForm";
@@ -160,11 +160,16 @@ const StudentProfile = () => {
             </Button>
             <h1 className="text-lg font-bold text-foreground truncate">{student.full_name}</h1>
           </div>
-          {student.user_id && (
-            <Button variant="ghost" size="icon" onClick={() => setShowChat(true)}>
-              <MessageCircle className="w-5 h-5 text-primary" />
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" onClick={() => navigate(`/students/${id}/workouts`)} title="Treinos">
+              <Dumbbell className="w-5 h-5 text-primary" />
             </Button>
-          )}
+            {student.user_id && (
+              <Button variant="ghost" size="icon" onClick={() => setShowChat(true)}>
+                <MessageCircle className="w-5 h-5 text-primary" />
+              </Button>
+            )}
+          </div>
         </div>
       </header>
 
