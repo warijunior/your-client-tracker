@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, LogOut, Dumbbell, Users, TrendingUp, Calendar, DollarSign, UserPlus } from "lucide-react";
+import { Plus, Search, LogOut, Dumbbell, Users, TrendingUp, Calendar, DollarSign, UserPlus, BookOpen } from "lucide-react";
 import StudentCard from "@/components/StudentCard";
 import NotificationBell from "@/components/NotificationBell";
 
@@ -102,6 +102,9 @@ const Dashboard = () => {
           </div>
           <div className="flex items-center gap-1">
             <NotificationBell />
+            <Button variant="ghost" size="icon" onClick={() => navigate("/exercises")} title="Biblioteca de exercícios">
+              <BookOpen className="w-5 h-5 text-primary" />
+            </Button>
             {isAdmin && (
               <Button variant="ghost" size="icon" onClick={() => navigate("/trainers/invite")} title="Convidar treinador">
                 <UserPlus className="w-5 h-5 text-primary" />
