@@ -66,13 +66,16 @@ const MyWorkouts = () => {
     } else setLogsByEx({});
   };
 
-  const addLog = async (we: WorkoutExercise, load: number, reps_done: number | null, notes: string | null) => {
+  const addLog = async (we: WorkoutExercise, load: number, reps_done: number | null, notes: string | null): Promise<void> => {
     if (!user || !studentId) return;
     const { data, error } = await supabase.from("exercise_logs").insert({
       workout_exercise_id: we.id, student_id: studentId, user_id: user.id,
       load, reps_done, notes,
     }).select().single();
-    if (error) return toast({ title: "Erro", description: error.message, variant: "destructive" });
+    if (error) {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+      return;
+    }
     setLogsByEx((prev) => ({ ...prev, [we.id]: [data as LogEntry, ...(prev[we.id] ?? [])] }));
     toast({ title: "Carga registrada! 💪" });
   };
