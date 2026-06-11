@@ -32,7 +32,7 @@ const MyWorkouts = () => {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const { data: s } = await supabase.from("students").select("id").eq("user_id", user.id).limit(1).single();
+      const { data: s } = await supabase.from("students").select("id").eq("user_id", user.id).limit(1).maybeSingle();
       if (!s) { setLoading(false); return; }
       setStudentId(s.id);
       const { data: w } = await supabase.from("workouts").select("id,title,notes").eq("student_id", s.id).eq("active", true).order("created_at", { ascending: false });
