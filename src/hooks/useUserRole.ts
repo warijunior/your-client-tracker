@@ -16,19 +16,20 @@ export const useUserRole = () => {
       return;
     }
 
-    const fetchRole = async () => {
+    let cancelled = false;
+    setLoading(true);
+    (async () => {
       const { data } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", user.id)
         .limit(1)
-        .single();
-
+        .maybeSingle();
+      if (cancelled) return;
       setRole((data?.role as UserRole) ?? null);
       setLoading(false);
-    };
-
-    fetchRole();
+    })();
+    return () => { cancelled = true; };
   }, [user]);
 
   const isStaff = role === "admin" || role === "trainer";
