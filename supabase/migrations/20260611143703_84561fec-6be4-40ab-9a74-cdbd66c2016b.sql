@@ -1,0 +1,1 @@
+UPDATE public.exercises SET gif_url = replace(gif_url, '/images/0.jpg', '/0.jpg') WHERE gif_url LIKE '%/images/0.jpg';
