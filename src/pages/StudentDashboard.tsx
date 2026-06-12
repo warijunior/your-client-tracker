@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -56,6 +57,7 @@ interface Payment {
 
 const StudentDashboard = () => {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [student, setStudent] = useState<StudentRecord | null>(null);
   const [checkins, setCheckins] = useState<Checkin[]>([]);
@@ -234,7 +236,7 @@ const StudentDashboard = () => {
             </div>
           </div>
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" onClick={() => window.location.assign("/my-workouts")} title="Meus treinos">
+            <Button variant="ghost" size="icon" onClick={() => navigate("/my-workouts")} title="Meus treinos">
               <ClipboardList className="w-5 h-5 text-primary" />
             </Button>
             <Button variant="ghost" size="icon" onClick={() => setShowChat(true)}>
