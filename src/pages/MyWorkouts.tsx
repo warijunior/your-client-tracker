@@ -152,6 +152,8 @@ const ExerciseBlock = ({
     setLoad(""); setReps(""); setNotes("");
   };
 
+  if (!we.exercises) return null;
+
   return (
     <div className="glass-card p-4 space-y-3">
       <div className="flex items-start gap-3">
@@ -165,6 +167,7 @@ const ExerciseBlock = ({
           {we.suggested_load != null && <p className="text-xs text-primary">Sugerido: {we.suggested_load} kg</p>}
         </div>
       </div>
+
       {we.notes && <p className="text-xs text-muted-foreground italic">Obs.: {we.notes}</p>}
 
       <div className="grid grid-cols-2 gap-2 text-xs">
