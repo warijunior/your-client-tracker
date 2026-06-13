@@ -4,7 +4,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dumbbell, Mail, Lock, User } from "lucide-react";
+import { Mail, Lock, User } from "lucide-react";
+import { XCLogo } from "@/components/XCLogo";
 import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
@@ -50,10 +51,8 @@ const Auth = () => {
       <div className="w-full max-w-sm space-y-8">
         {/* Logo */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl gradient-primary glow-primary">
-            <Dumbbell className="w-8 h-8 text-primary-foreground" />
-          </div>
-          <h1 className="text-2xl font-bold text-foreground">XConsultoriaa-Esportiva</h1>
+          <XCLogo variant="badge" size={64} className="mx-auto" />
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">XC <span className="text-gradient">Consultoria Esportiva</span></h1>
           <p className="text-muted-foreground text-sm">
             {isLogin ? "Entre na sua conta" : "Crie sua conta de aluno"}
           </p>
