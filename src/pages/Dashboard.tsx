@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, LogOut, Dumbbell, Users, TrendingUp, Calendar, DollarSign, UserPlus, BookOpen } from "lucide-react";
+import { Plus, Search, LogOut, Users, TrendingUp, Calendar, DollarSign, UserPlus, BookOpen } from "lucide-react";
+import { XCLogo } from "@/components/XCLogo";
 import StudentCard from "@/components/StudentCard";
 import NotificationBell from "@/components/NotificationBell";
 
@@ -97,8 +98,8 @@ const Dashboard = () => {
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border p-4">
         <div className="flex items-center justify-between max-w-lg mx-auto">
           <div className="flex items-center gap-2">
-            <Dumbbell className="w-6 h-6 text-primary" />
-            <h1 className="text-lg font-bold text-foreground">XConsultoriaa-Esportiva</h1>
+            <XCLogo size={28} />
+            <h1 className="text-lg font-bold text-foreground tracking-tight">XC <span className="text-muted-foreground font-medium">Esportiva</span></h1>
           </div>
           <div className="flex items-center gap-1">
             <NotificationBell />

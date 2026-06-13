@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dumbbell, LogOut, CheckCircle2, Calendar, TrendingUp, ChevronLeft, ChevronRight, MessageCircle, Camera, DollarSign, ClipboardList } from "lucide-react";
+import { XCLogo } from "@/components/XCLogo";
 import { useToast } from "@/hooks/use-toast";
 import NotificationBell from "@/components/NotificationBell";
 import ChatWindow from "@/components/ChatWindow";
@@ -229,10 +230,10 @@ const StudentDashboard = () => {
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border p-4">
         <div className="flex items-center justify-between max-w-lg mx-auto">
           <div className="flex items-center gap-2">
-            <Dumbbell className="w-6 h-6 text-primary" />
+            <XCLogo size={28} />
             <div>
               <h1 className="text-sm font-bold text-foreground">Olá, {student.full_name.split(" ")[0]}!</h1>
-              <p className="text-xs text-muted-foreground">{student.goal ? `Objetivo: ${student.goal}` : "XConsultoriaa-Esportiva"}</p>
+              <p className="text-xs text-muted-foreground">{student.goal ? `Objetivo: ${student.goal}` : "XC Consultoria Esportiva"}</p>
             </div>
           </div>
           <div className="flex items-center gap-1">
