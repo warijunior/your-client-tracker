@@ -1,3 +1,4 @@
+import { ExerciseMedia } from "@/components/ExerciseMedia";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -131,11 +132,7 @@ const ExerciseLibrary = () => {
                 className="glass-card p-2 text-left space-y-2 hover:ring-1 hover:ring-primary/50 transition"
               >
                 <div className="aspect-square w-full overflow-hidden rounded-md bg-secondary">
-                  {ex.gif_url ? (
-                    <img src={ex.gif_url} alt={ex.name} loading="lazy" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center"><Dumbbell className="w-8 h-8 text-muted-foreground" /></div>
-                  )}
+                  <ExerciseMedia src={ex.gif_url} alt={ex.name} />
                 </div>
                 <p className="text-xs font-semibold text-foreground line-clamp-2">{ex.name}</p>
                 <p className="text-[10px] text-muted-foreground">{ex.muscle_group}</p>
@@ -153,9 +150,9 @@ const ExerciseLibrary = () => {
                 <h2 className="text-lg font-bold text-foreground">{active.name}</h2>
                 <Button variant="ghost" size="sm" onClick={() => setActive(null)}>Fechar</Button>
               </div>
-              {active.gif_url && (
-                <img src={active.gif_url} alt={active.name} className="w-full rounded-lg" />
-              )}
+              <div className="w-full aspect-video rounded-lg overflow-hidden bg-secondary">
+                <ExerciseMedia src={active.gif_url} alt={active.name} />
+              </div>
               <div className="flex flex-wrap gap-2 text-xs">
                 <span className="px-2 py-1 rounded-full bg-primary/10 text-primary">{active.muscle_group}</span>
                 {active.equipment && <span className="px-2 py-1 rounded-full bg-secondary text-foreground">{active.equipment}</span>}
