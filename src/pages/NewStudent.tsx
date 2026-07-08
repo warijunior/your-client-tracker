@@ -80,7 +80,7 @@ const NewStudent = () => {
           </ul>
         </div>
         <div className="space-y-2">
-          <Label className="text-muted-foreground">Nome completo *</Label>
+          <Label className="text-muted-foreground flex items-center gap-2"><User className="w-3.5 h-3.5" /> Nome completo *</Label>
           <Input
             value={form.full_name}
             onChange={(e) => setForm({ ...form, full_name: e.target.value })}
@@ -91,7 +91,7 @@ const NewStudent = () => {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-muted-foreground">Email do aluno</Label>
+          <Label className="text-muted-foreground flex items-center gap-2"><Mail className="w-3.5 h-3.5" /> Email do aluno</Label>
           <Input
             type="email"
             value={form.email}
@@ -104,7 +104,7 @@ const NewStudent = () => {
 
         <div className="grid grid-cols-3 gap-3">
           <div className="space-y-2">
-            <Label className="text-muted-foreground">Idade</Label>
+            <Label className="text-muted-foreground flex items-center gap-2"><Cake className="w-3.5 h-3.5" /> Idade</Label>
             <Input
               type="number"
               value={form.age}
@@ -114,7 +114,7 @@ const NewStudent = () => {
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-muted-foreground">Peso (kg)</Label>
+            <Label className="text-muted-foreground flex items-center gap-2"><Scale className="w-3.5 h-3.5" /> Peso (kg)</Label>
             <Input
               type="number"
               step="0.1"
@@ -125,7 +125,7 @@ const NewStudent = () => {
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-muted-foreground">Altura (m)</Label>
+            <Label className="text-muted-foreground flex items-center gap-2"><Ruler className="w-3.5 h-3.5" /> Altura (m)</Label>
             <Input
               type="number"
               step="0.01"
@@ -138,7 +138,7 @@ const NewStudent = () => {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-muted-foreground">Objetivo</Label>
+          <Label className="text-muted-foreground flex items-center gap-2"><Target className="w-3.5 h-3.5" /> Objetivo</Label>
           <Select value={form.goal} onValueChange={(v) => setForm({ ...form, goal: v })}>
             <SelectTrigger className="bg-secondary border-border">
               <SelectValue placeholder="Selecione o objetivo" />
@@ -154,7 +154,7 @@ const NewStudent = () => {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-muted-foreground">Histórico de saúde</Label>
+          <Label className="text-muted-foreground flex items-center gap-2"><HeartPulse className="w-3.5 h-3.5" /> Histórico de saúde</Label>
           <Textarea
             value={form.health_history}
             onChange={(e) => setForm({ ...form, health_history: e.target.value })}
