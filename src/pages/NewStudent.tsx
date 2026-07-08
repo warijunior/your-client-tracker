@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, User, Mail, Cake, Scale, Ruler, Target, HeartPulse, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const NewStudent = () => {
@@ -57,13 +57,30 @@ const NewStudent = () => {
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <h1 className="text-lg font-bold text-foreground">Novo Aluno</h1>
+          <h1 className="text-lg font-bold text-foreground">👤 Cadastro de Novo Aluno</h1>
         </div>
       </header>
 
       <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-4 space-y-4">
+        <div className="space-y-2 pb-2">
+          <h2 className="text-sm font-medium text-foreground">Os dados abaixo serão utilizados para:</h2>
+          <ul className="space-y-1">
+            <li className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Check className="w-3.5 h-3.5 text-primary" /> Montar treinos
+            </li>
+            <li className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Check className="w-3.5 h-3.5 text-primary" /> Registrar avaliações
+            </li>
+            <li className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Check className="w-3.5 h-3.5 text-primary" /> Acompanhar evolução
+            </li>
+            <li className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Check className="w-3.5 h-3.5 text-primary" /> Gerenciar check-ins
+            </li>
+          </ul>
+        </div>
         <div className="space-y-2">
-          <Label className="text-muted-foreground">Nome completo *</Label>
+          <Label className="text-muted-foreground flex items-center gap-2"><User className="w-3.5 h-3.5" /> Nome completo *</Label>
           <Input
             value={form.full_name}
             onChange={(e) => setForm({ ...form, full_name: e.target.value })}
@@ -74,7 +91,7 @@ const NewStudent = () => {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-muted-foreground">Email do aluno</Label>
+          <Label className="text-muted-foreground flex items-center gap-2"><Mail className="w-3.5 h-3.5" /> Email do aluno</Label>
           <Input
             type="email"
             value={form.email}
@@ -87,7 +104,7 @@ const NewStudent = () => {
 
         <div className="grid grid-cols-3 gap-3">
           <div className="space-y-2">
-            <Label className="text-muted-foreground">Idade</Label>
+            <Label className="text-muted-foreground flex items-center gap-2"><Cake className="w-3.5 h-3.5" /> Idade</Label>
             <Input
               type="number"
               value={form.age}
@@ -97,7 +114,7 @@ const NewStudent = () => {
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-muted-foreground">Peso (kg)</Label>
+            <Label className="text-muted-foreground flex items-center gap-2"><Scale className="w-3.5 h-3.5" /> Peso (kg)</Label>
             <Input
               type="number"
               step="0.1"
@@ -108,7 +125,7 @@ const NewStudent = () => {
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-muted-foreground">Altura (m)</Label>
+            <Label className="text-muted-foreground flex items-center gap-2"><Ruler className="w-3.5 h-3.5" /> Altura (m)</Label>
             <Input
               type="number"
               step="0.01"
@@ -121,7 +138,7 @@ const NewStudent = () => {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-muted-foreground">Objetivo</Label>
+          <Label className="text-muted-foreground flex items-center gap-2"><Target className="w-3.5 h-3.5" /> Objetivo</Label>
           <Select value={form.goal} onValueChange={(v) => setForm({ ...form, goal: v })}>
             <SelectTrigger className="bg-secondary border-border">
               <SelectValue placeholder="Selecione o objetivo" />
@@ -137,7 +154,7 @@ const NewStudent = () => {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-muted-foreground">Histórico de saúde</Label>
+          <Label className="text-muted-foreground flex items-center gap-2"><HeartPulse className="w-3.5 h-3.5" /> Histórico de saúde</Label>
           <Textarea
             value={form.health_history}
             onChange={(e) => setForm({ ...form, health_history: e.target.value })}
