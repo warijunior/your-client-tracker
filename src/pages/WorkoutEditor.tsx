@@ -135,7 +135,7 @@ const WorkoutEditor = () => {
           <div key={it.id} className="glass-card p-3 space-y-3">
             <div className="flex items-start gap-3">
               <div className="w-16 h-16 rounded-md overflow-hidden bg-secondary shrink-0">
-                {it.exercises?.gif_url ? <img src={it.exercises.gif_url} alt="" loading="lazy" className="w-full h-full object-cover" /> : null}
+                <ExerciseMedia src={it.exercises?.gif_url} alt={it.exercises?.name} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-foreground truncate">{idx + 1}. {it.exercises?.name}</p>
@@ -185,7 +185,7 @@ const WorkoutEditor = () => {
               {filteredEx.map((ex) => (
                 <button key={ex.id} onClick={() => addExercise(ex.id)} className="w-full glass-card p-2 flex items-center gap-3 text-left hover:ring-1 hover:ring-primary/50">
                   <div className="w-12 h-12 rounded-md bg-secondary overflow-hidden shrink-0">
-                    {ex.gif_url ? <img src={ex.gif_url} alt="" loading="lazy" className="w-full h-full object-cover" /> : null}
+                    <ExerciseMedia src={ex.gif_url} alt={ex.name} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{ex.name}</p>

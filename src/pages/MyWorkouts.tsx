@@ -158,7 +158,7 @@ const ExerciseBlock = ({
     <div className="glass-card p-4 space-y-3">
       <div className="flex items-start gap-3">
         <div className="w-20 h-20 rounded-md bg-secondary overflow-hidden shrink-0">
-          {we.exercises.gif_url && <img src={we.exercises.gif_url} alt="" loading="lazy" className="w-full h-full object-cover" />}
+          <ExerciseMedia src={we.exercises.gif_url} alt={we.exercises.name} />
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-foreground">{idx + 1}. {we.exercises.name}</p>
