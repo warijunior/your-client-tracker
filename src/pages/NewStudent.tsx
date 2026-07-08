@@ -102,7 +102,7 @@ const NewStudent = () => {
           <p className="text-xs text-muted-foreground">O aluno poderá criar conta com este email para fazer check-ins.</p>
         </div>
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-5 sm:gap-6">
           <div className="space-y-2">
             <Label className="text-muted-foreground flex items-center gap-2"><Cake className="w-3.5 h-3.5" /> Idade</Label>
             <Input
