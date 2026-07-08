@@ -57,11 +57,28 @@ const NewStudent = () => {
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <h1 className="text-lg font-bold text-foreground">Novo Aluno</h1>
+          <h1 className="text-lg font-bold text-foreground">👤 Cadastro de Novo Aluno</h1>
         </div>
       </header>
 
       <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-4 space-y-4">
+        <div className="space-y-2 pb-2">
+          <h2 className="text-sm font-medium text-foreground">Os dados abaixo serão utilizados para:</h2>
+          <ul className="space-y-1">
+            <li className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Check className="w-3.5 h-3.5 text-primary" /> Montar treinos
+            </li>
+            <li className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Check className="w-3.5 h-3.5 text-primary" /> Registrar avaliações
+            </li>
+            <li className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Check className="w-3.5 h-3.5 text-primary" /> Acompanhar evolução
+            </li>
+            <li className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Check className="w-3.5 h-3.5 text-primary" /> Gerenciar check-ins
+            </li>
+          </ul>
+        </div>
         <div className="space-y-2">
           <Label className="text-muted-foreground">Nome completo *</Label>
           <Input
