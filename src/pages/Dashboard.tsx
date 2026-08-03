@@ -37,12 +37,70 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [upcomingAppointments, setUpcomingAppointments] = useState<UpcomingAppointment[]>([]);
   const [pendingPayments, setPendingPayments] = useState(0);
+  const [activeWorkouts, setActiveWorkouts] = useState(0);
+  const [checkinsToday, setCheckinsToday] = useState(0);
+  const [reminding, setReminding] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchStudents();
     fetchUpcoming();
     fetchPendingPayments();
+    fetchEngagement();
   }, []);
+
+  const fetchEngagement = async () => {
+    const today = new Date().toISOString().split("T")[0];
+    const [{ count: wCount }, { count: cCount }] = await Promise.all([
+      supabase.from("workouts").select("*", { count: "exact", head: true }).eq("active", true),
+      supabase
+        .from("checkins")
+        .select("*", { count: "exact", head: true })
+        .eq("check_date", today)
+        .eq("training_done", true),
+    ]);
+    setActiveWorkouts(wCount || 0);
+    setCheckinsToday(cCount || 0);
+  };
+
+  const remindStudents = async () => {
+    setReminding(true);
+    const today = new Date().toISOString().split("T")[0];
+    const { data: linked } = await supabase
+      .from("students")
+      .select("id, full_name, user_id")
+      .not("user_id", "is", null);
+
+    const { data: done } = await supabase
+      .from("checkins")
+      .select("student_id")
+      .eq("check_date", today);
+    const doneSet = new Set((done ?? []).map((c) => c.student_id));
+
+    const targets = (linked ?? []).filter((s) => !doneSet.has(s.id));
+    if (targets.length === 0) {
+      toast({ title: "Todos já fizeram check-in hoje 🎉" });
+      setReminding(false);
+      return;
+    }
+
+    const { error } = await supabase.from("notifications").insert(
+      targets.map((s) => ({
+        user_id: s.user_id as string,
+        title: "Hora de treinar! 💪",
+        message: "Seu treinador lembrou: registre seu treino de hoje no check-in.",
+        type: "reminder",
+        link: "/",
+      }))
+    );
+
+    if (error) {
+      toast({ title: "Não foi possível enviar", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: `Lembrete enviado para ${targets.length} aluno(s)` });
+    }
+    setReminding(false);
+  };
 
   const fetchStudents = async () => {
     const { data, error } = await supabase
