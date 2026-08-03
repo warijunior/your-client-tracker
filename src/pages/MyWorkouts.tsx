@@ -1,4 +1,5 @@
 import { ExerciseMedia } from "@/components/ExerciseMedia";
+import { LoadChart } from "@/components/LoadChart";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -119,7 +120,14 @@ const MyWorkouts = () => {
         </div>
       </header>
       <div className="max-w-lg mx-auto p-4 space-y-3">
-        {workouts.length === 0 ? (
+        {!studentId ? (
+          <div className="glass-card p-4 text-center space-y-2">
+            <p className="text-sm font-medium text-foreground">Seu perfil de aluno ainda não está vinculado</p>
+            <p className="text-xs text-muted-foreground">
+              Peça ao seu treinador para cadastrar você com este mesmo e-mail. Depois disso seus treinos aparecem aqui automaticamente.
+            </p>
+          </div>
+        ) : workouts.length === 0 ? (
           <p className="text-center text-muted-foreground py-8">Nenhum treino ativo. Aguarde seu treinador montar seu treino.</p>
         ) : workouts.map((w) => (
           <button key={w.id} onClick={() => openWorkout(w)} className="w-full glass-card p-4 text-left hover:ring-1 hover:ring-primary/50">
@@ -199,6 +207,7 @@ const ExerciseBlock = ({
       )}
       {showHist && (
         <div className="space-y-1 pt-2 border-t border-border">
+          <LoadChart logs={logs} />
           {logs.map((l) => (
             <div key={l.id} className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">{new Date(l.performed_at).toLocaleDateString("pt-BR")}</span>

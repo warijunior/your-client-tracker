@@ -15,6 +15,8 @@ const NewStudent = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [form, setForm] = useState({
     full_name: "",
     email: "",
@@ -25,15 +27,33 @@ const NewStudent = () => {
     health_history: "",
   });
 
+  const validate = () => {
+    const e: Record<string, string> = {};
+    if (form.full_name.trim().length < 3) e.full_name = "Informe o nome completo (mín. 3 caracteres).";
+    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim())) e.email = "E-mail inválido.";
+    const age = form.age ? parseInt(form.age) : null;
+    if (age !== null && (isNaN(age) || age < 10 || age > 100)) e.age = "Idade entre 10 e 100.";
+    const weight = form.weight ? parseFloat(form.weight) : null;
+    if (weight !== null && (isNaN(weight) || weight < 20 || weight > 300)) e.weight = "Peso entre 20 e 300 kg.";
+    const height = form.height ? parseFloat(form.height) : null;
+    if (height !== null && (isNaN(height) || height < 1 || height > 2.5)) e.height = "Altura em metros (ex.: 1.75).";
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+    if (!validate()) {
+      toast({ title: "Verifique os campos destacados", variant: "destructive" });
+      return;
+    }
     setLoading(true);
 
     const { error } = await supabase.from("students").insert({
       trainer_id: user.id,
-      full_name: form.full_name,
-      email: form.email || null,
+      full_name: form.full_name.trim(),
+      email: form.email.trim().toLowerCase() || null,
       age: form.age ? parseInt(form.age) : null,
       weight: form.weight ? parseFloat(form.weight) : null,
       height: form.height ? parseFloat(form.height) : null,
@@ -43,11 +63,13 @@ const NewStudent = () => {
 
     if (error) {
       toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
+      setLoading(false);
     } else {
+      setLoading(false);
+      setSuccess(true);
       toast({ title: "Aluno cadastrado! 🎉" });
-      navigate("/");
+      setTimeout(() => navigate("/"), 700);
     }
-    setLoading(false);
   };
 
   return (
@@ -88,6 +110,7 @@ const NewStudent = () => {
             className="bg-secondary border-border"
             required
           />
+          {errors.full_name && <p className="text-xs text-destructive">{errors.full_name}</p>}
         </div>
 
         <div className="space-y-2">
@@ -99,7 +122,11 @@ const NewStudent = () => {
             placeholder="aluno@email.com (para acesso ao app)"
             className="bg-secondary border-border"
           />
-          <p className="text-xs text-muted-foreground">O aluno poderá criar conta com este email para fazer check-ins.</p>
+          {errors.email ? (
+            <p className="text-xs text-destructive">{errors.email}</p>
+          ) : (
+            <p className="text-xs text-muted-foreground">O aluno poderá criar conta com este email para fazer check-ins.</p>
+          )}
         </div>
 
         <div className="grid grid-cols-3 gap-5 sm:gap-6">
@@ -112,6 +139,7 @@ const NewStudent = () => {
               placeholder="25"
               className="bg-secondary border-border"
             />
+            {errors.age && <p className="text-xs text-destructive">{errors.age}</p>}
           </div>
           <div className="space-y-2">
             <Label className="text-muted-foreground flex items-center gap-2"><Scale className="w-3.5 h-3.5" /> Peso (kg)</Label>
@@ -123,6 +151,7 @@ const NewStudent = () => {
               placeholder="75.0"
               className="bg-secondary border-border"
             />
+            {errors.weight && <p className="text-xs text-destructive">{errors.weight}</p>}
           </div>
           <div className="space-y-2">
             <Label className="text-muted-foreground flex items-center gap-2"><Ruler className="w-3.5 h-3.5" /> Altura (m)</Label>
@@ -134,8 +163,10 @@ const NewStudent = () => {
               placeholder="1.75"
               className="bg-secondary border-border"
             />
+            {errors.height && <p className="text-xs text-destructive">{errors.height}</p>}
           </div>
         </div>
+
 
         <div className="space-y-2">
           <Label className="text-muted-foreground flex items-center gap-2"><Target className="w-3.5 h-3.5" /> Objetivo</Label>
@@ -163,8 +194,21 @@ const NewStudent = () => {
           />
         </div>
 
-        <Button type="submit" disabled={loading} className="w-full gradient-primary text-primary-foreground font-semibold h-12 glow-primary">
-          {loading ? "Salvando..." : "Cadastrar aluno"}
+        <Button
+          type="submit"
+          disabled={loading || success}
+          className="w-full gradient-primary text-primary-foreground font-semibold h-12 glow-primary"
+        >
+          {success ? (
+            <span className="flex items-center gap-2"><Check className="w-4 h-4" /> Cadastrado!</span>
+          ) : loading ? (
+            <span className="flex items-center gap-2">
+              <span className="w-4 h-4 border-2 border-primary-foreground/40 border-t-primary-foreground rounded-full animate-spin" />
+              Salvando...
+            </span>
+          ) : (
+            "Cadastrar aluno"
+          )}
         </Button>
       </form>
     </div>
