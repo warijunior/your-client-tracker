@@ -5,10 +5,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, LogOut, Users, TrendingUp, Calendar, DollarSign, UserPlus, BookOpen } from "lucide-react";
+import { Plus, Search, LogOut, Users, TrendingUp, Calendar, DollarSign, UserPlus, BookOpen, Dumbbell, CheckCircle2, BellRing } from "lucide-react";
 import { XCLogo } from "@/components/XCLogo";
 import StudentCard from "@/components/StudentCard";
 import NotificationBell from "@/components/NotificationBell";
+import { useToast } from "@/hooks/use-toast";
 
 interface Student {
   id: string;
