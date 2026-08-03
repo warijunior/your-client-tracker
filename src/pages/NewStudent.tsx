@@ -15,6 +15,8 @@ const NewStudent = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [form, setForm] = useState({
     full_name: "",
     email: "",
@@ -25,15 +27,33 @@ const NewStudent = () => {
     health_history: "",
   });
 
+  const validate = () => {
+    const e: Record<string, string> = {};
+    if (form.full_name.trim().length < 3) e.full_name = "Informe o nome completo (mín. 3 caracteres).";
+    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim())) e.email = "E-mail inválido.";
+    const age = form.age ? parseInt(form.age) : null;
+    if (age !== null && (isNaN(age) || age < 10 || age > 100)) e.age = "Idade entre 10 e 100.";
+    const weight = form.weight ? parseFloat(form.weight) : null;
+    if (weight !== null && (isNaN(weight) || weight < 20 || weight > 300)) e.weight = "Peso entre 20 e 300 kg.";
+    const height = form.height ? parseFloat(form.height) : null;
+    if (height !== null && (isNaN(height) || height < 1 || height > 2.5)) e.height = "Altura em metros (ex.: 1.75).";
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+    if (!validate()) {
+      toast({ title: "Verifique os campos destacados", variant: "destructive" });
+      return;
+    }
     setLoading(true);
 
     const { error } = await supabase.from("students").insert({
       trainer_id: user.id,
-      full_name: form.full_name,
-      email: form.email || null,
+      full_name: form.full_name.trim(),
+      email: form.email.trim().toLowerCase() || null,
       age: form.age ? parseInt(form.age) : null,
       weight: form.weight ? parseFloat(form.weight) : null,
       height: form.height ? parseFloat(form.height) : null,
@@ -43,11 +63,13 @@ const NewStudent = () => {
 
     if (error) {
       toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
+      setLoading(false);
     } else {
+      setLoading(false);
+      setSuccess(true);
       toast({ title: "Aluno cadastrado! 🎉" });
-      navigate("/");
+      setTimeout(() => navigate("/"), 700);
     }
-    setLoading(false);
   };
 
   return (
