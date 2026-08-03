@@ -110,6 +110,7 @@ const NewStudent = () => {
             className="bg-secondary border-border"
             required
           />
+          {errors.full_name && <p className="text-xs text-destructive">{errors.full_name}</p>}
         </div>
 
         <div className="space-y-2">
@@ -121,7 +122,11 @@ const NewStudent = () => {
             placeholder="aluno@email.com (para acesso ao app)"
             className="bg-secondary border-border"
           />
-          <p className="text-xs text-muted-foreground">O aluno poderá criar conta com este email para fazer check-ins.</p>
+          {errors.email ? (
+            <p className="text-xs text-destructive">{errors.email}</p>
+          ) : (
+            <p className="text-xs text-muted-foreground">O aluno poderá criar conta com este email para fazer check-ins.</p>
+          )}
         </div>
 
         <div className="grid grid-cols-3 gap-5 sm:gap-6">
@@ -134,6 +139,7 @@ const NewStudent = () => {
               placeholder="25"
               className="bg-secondary border-border"
             />
+            {errors.age && <p className="text-xs text-destructive">{errors.age}</p>}
           </div>
           <div className="space-y-2">
             <Label className="text-muted-foreground flex items-center gap-2"><Scale className="w-3.5 h-3.5" /> Peso (kg)</Label>
@@ -145,6 +151,7 @@ const NewStudent = () => {
               placeholder="75.0"
               className="bg-secondary border-border"
             />
+            {errors.weight && <p className="text-xs text-destructive">{errors.weight}</p>}
           </div>
           <div className="space-y-2">
             <Label className="text-muted-foreground flex items-center gap-2"><Ruler className="w-3.5 h-3.5" /> Altura (m)</Label>
@@ -156,8 +163,10 @@ const NewStudent = () => {
               placeholder="1.75"
               className="bg-secondary border-border"
             />
+            {errors.height && <p className="text-xs text-destructive">{errors.height}</p>}
           </div>
         </div>
+
 
         <div className="space-y-2">
           <Label className="text-muted-foreground flex items-center gap-2"><Target className="w-3.5 h-3.5" /> Objetivo</Label>
