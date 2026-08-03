@@ -197,6 +197,30 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* Engajamento */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="glass-card p-4 space-y-1">
+            <Dumbbell className="w-5 h-5 text-primary" />
+            <p className="text-2xl font-bold text-foreground">{activeWorkouts}</p>
+            <p className="text-xs text-muted-foreground">Treinos ativos</p>
+          </div>
+          <div className="glass-card p-4 space-y-1">
+            <CheckCircle2 className="w-5 h-5 text-primary" />
+            <p className="text-2xl font-bold text-foreground">{checkinsToday}</p>
+            <p className="text-xs text-muted-foreground">Check-ins hoje</p>
+          </div>
+        </div>
+
+        <Button
+          variant="outline"
+          onClick={remindStudents}
+          disabled={reminding}
+          className="w-full border-border"
+        >
+          <BellRing className="w-4 h-4 mr-2 text-primary" />
+          {reminding ? "Enviando lembretes..." : "Lembrar alunos de treinar hoje"}
+        </Button>
+
         {/* Upcoming Appointments */}
         {upcomingAppointments.length > 0 && (
           <div className="space-y-2">
