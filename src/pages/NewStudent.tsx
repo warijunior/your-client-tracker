@@ -194,8 +194,21 @@ const NewStudent = () => {
           />
         </div>
 
-        <Button type="submit" disabled={loading} className="w-full gradient-primary text-primary-foreground font-semibold h-12 glow-primary">
-          {loading ? "Salvando..." : "Cadastrar aluno"}
+        <Button
+          type="submit"
+          disabled={loading || success}
+          className="w-full gradient-primary text-primary-foreground font-semibold h-12 glow-primary"
+        >
+          {success ? (
+            <span className="flex items-center gap-2"><Check className="w-4 h-4" /> Cadastrado!</span>
+          ) : loading ? (
+            <span className="flex items-center gap-2">
+              <span className="w-4 h-4 border-2 border-primary-foreground/40 border-t-primary-foreground rounded-full animate-spin" />
+              Salvando...
+            </span>
+          ) : (
+            "Cadastrar aluno"
+          )}
         </Button>
       </form>
     </div>
