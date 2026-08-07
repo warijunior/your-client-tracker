@@ -24,6 +24,7 @@ interface Student {
   health_history: string | null;
   notes: string | null;
   user_id: string | null;
+  avatar_url?: string | null;
 }
 
 interface Assessment {
