@@ -168,6 +168,42 @@ const StudentDashboard = () => {
     setSubmitting(false);
   };
 
+  const handleAvatarUpload = async (file: File) => {
+    if (!student || !user) return;
+
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${student.id}-${Math.random()}.${fileExt}`;
+      const filePath = `${user.id}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from("students")
+        .update({ avatar_url: publicUrl })
+        .eq("id", student.id);
+
+      if (updateError) throw updateError;
+
+      setStudent({ ...student, avatar_url: publicUrl });
+      toast({ title: "Foto de perfil atualizada!" });
+    } catch (error: any) {
+      toast({
+        title: "Erro ao fazer upload",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   // Calendar helpers
   const getDaysInMonth = (date: Date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
   const getFirstDayOfMonth = (date: Date) => new Date(date.getFullYear(), date.getMonth(), 1).getDay();
