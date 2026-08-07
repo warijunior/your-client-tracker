@@ -178,8 +178,29 @@ const StudentProfile = () => {
         {/* Profile Card */}
         <div className="glass-card p-5 space-y-4">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center">
-              <User className="w-7 h-7 text-muted-foreground" />
+            <div className="relative group">
+              <Avatar className="w-16 h-16 border-2 border-primary/20">
+                <AvatarImage src={student.avatar_url || ""} alt={student.full_name} className="object-cover" />
+                <AvatarFallback className="bg-secondary">
+                  <User className="w-8 h-8 text-muted-foreground" />
+                </AvatarFallback>
+              </Avatar>
+              <label 
+                htmlFor="avatar-upload" 
+                className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity"
+              >
+                <Camera className="w-5 h-5 text-white" />
+                <input 
+                  id="avatar-upload" 
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden" 
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleAvatarUpload(file);
+                  }}
+                />
+              </label>
             </div>
             <div>
               <h2 className="text-xl font-bold text-foreground">{student.full_name}</h2>
