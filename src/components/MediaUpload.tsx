@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Upload, Image as ImageIcon, Film, X, Check } from "lucide-react";
+import { Upload, Image as ImageIcon, Film, X, Check, Maximize2, Trash2, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -73,6 +73,26 @@ export const MediaUpload = ({ exerciseId, onSuccess, currentMedia }: MediaUpload
     }
   };
 
+  const removeMedia = async (type: 'gif_url' | 'video_url' | 'image_url') => {
+    if (!confirm("Deseja remover esta mídia?")) return;
+    
+    setUploading(true);
+    try {
+      const { error } = await supabase
+        .from('exercises')
+        .update({ [type]: null })
+        .eq('id', exerciseId);
+
+      if (error) throw error;
+      toast({ title: "Mídia removida com sucesso." });
+      onSuccess();
+    } catch (error: any) {
+      toast({ title: "Erro ao remover", description: error.message, variant: "destructive" });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <div className="space-y-3">
       <input
@@ -83,25 +103,46 @@ export const MediaUpload = ({ exerciseId, onSuccess, currentMedia }: MediaUpload
         className="hidden"
       />
       
-      <div className="grid grid-cols-2 gap-2">
+      <div className="flex flex-col gap-2">
         <Button 
           variant="outline" 
           size="sm" 
           disabled={uploading}
           onClick={() => fileInputRef.current?.click()}
-          className="w-full border-dashed"
+          className="w-full border-primary/30 hover:bg-primary/5 text-primary"
         >
           {uploading ? "Enviando..." : (
-            <><Upload className="w-4 h-4 mr-2" /> Alterar Mídia</>
+            <><Plus className="w-4 h-4 mr-2" /> Adicionar / Alterar Mídia</>
           )}
         </Button>
         
-        <div className="flex items-center gap-2 px-3 py-1 bg-secondary rounded-md border border-border">
-          {currentMedia?.gif_url && <span title="GIF disponível">🎞️</span>}
-          {currentMedia?.video_url && <span title="Vídeo disponível">🎥</span>}
-          {currentMedia?.image_url && <span title="Imagem disponível">🖼️</span>}
+        <div className="flex flex-wrap gap-2">
+          {currentMedia?.gif_url && (
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-secondary/50 rounded-full border border-border group">
+              <span className="text-xs">GIF</span>
+              <button onClick={() => removeMedia('gif_url')} className="opacity-0 group-hover:opacity-100 text-destructive transition-opacity">
+                <Trash2 className="w-3 h-3" />
+              </button>
+            </div>
+          )}
+          {currentMedia?.video_url && (
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-secondary/50 rounded-full border border-border group">
+              <span className="text-xs">Vídeo</span>
+              <button onClick={() => removeMedia('video_url')} className="opacity-0 group-hover:opacity-100 text-destructive transition-opacity">
+                <Trash2 className="w-3 h-3" />
+              </button>
+            </div>
+          )}
+          {currentMedia?.image_url && (
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-secondary/50 rounded-full border border-border group">
+              <span className="text-xs">Foto</span>
+              <button onClick={() => removeMedia('image_url')} className="opacity-0 group-hover:opacity-100 text-destructive transition-opacity">
+                <Trash2 className="w-3 h-3" />
+              </button>
+            </div>
+          )}
           {!currentMedia?.gif_url && !currentMedia?.video_url && !currentMedia?.image_url && (
-            <span className="text-[10px] text-muted-foreground italic">Sem mídia customizada</span>
+            <span className="text-[10px] text-muted-foreground italic px-2">Nenhuma mídia vinculada</span>
           )}
         </div>
       </div>
