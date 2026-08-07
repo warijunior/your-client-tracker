@@ -289,6 +289,7 @@ const Dashboard = () => {
                 key={student.id}
                 student={student}
                 onClick={() => navigate(`/students/${student.id}`)}
+                onDelete={() => deleteStudent(student.id)}
               />
             ))
           )}
