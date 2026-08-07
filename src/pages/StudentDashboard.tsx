@@ -87,7 +87,7 @@ const StudentDashboard = () => {
   const fetchData = async () => {
     const { data: studentData } = await supabase
       .from("students")
-      .select("id, full_name, goal, weight, trainer_id")
+      .select("id, full_name, goal, weight, trainer_id, avatar_url")
       .eq("user_id", user!.id)
       .limit(1)
       .single();
