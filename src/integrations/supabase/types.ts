@@ -218,11 +218,13 @@ export type Database = {
           equipment: string | null
           gif_url: string | null
           id: string
+          image_url: string | null
           is_unilateral: boolean
           muscle_group: string
           name: string
           secondary_muscles: string[]
           source: string | null
+          video_url: string | null
         }
         Insert: {
           category?: string
@@ -232,11 +234,13 @@ export type Database = {
           equipment?: string | null
           gif_url?: string | null
           id?: string
+          image_url?: string | null
           is_unilateral?: boolean
           muscle_group: string
           name: string
           secondary_muscles?: string[]
           source?: string | null
+          video_url?: string | null
         }
         Update: {
           category?: string
@@ -246,11 +250,13 @@ export type Database = {
           equipment?: string | null
           gif_url?: string | null
           id?: string
+          image_url?: string | null
           is_unilateral?: boolean
           muscle_group?: string
           name?: string
           secondary_muscles?: string[]
           source?: string | null
+          video_url?: string | null
         }
         Relationships: []
       }
