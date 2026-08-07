@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Search, Dumbbell } from "lucide-react";
+import { ArrowLeft, Search, Dumbbell, Plus } from "lucide-react";
+import { MediaUpload } from "@/components/MediaUpload";
 
 interface Exercise {
   id: string;
@@ -18,6 +19,8 @@ interface Exercise {
   is_unilateral: boolean;
   description: string | null;
   gif_url: string | null;
+  video_url?: string | null;
+  image_url?: string | null;
 }
 
 const ALL = "__all__";
@@ -33,16 +36,19 @@ const ExerciseLibrary = () => {
   const [unilateral, setUnilateral] = useState(ALL);
   const [active, setActive] = useState<Exercise | null>(null);
 
+  const fetchExercises = async () => {
+    setLoading(true);
+    const { data } = await supabase
+      .from("exercises")
+      .select("*")
+      .order("muscle_group")
+      .order("name");
+    setItems((data as Exercise[]) ?? []);
+    setLoading(false);
+  };
+
   useEffect(() => {
-    (async () => {
-      const { data } = await supabase
-        .from("exercises")
-        .select("*")
-        .order("muscle_group")
-        .order("name");
-      setItems((data as Exercise[]) ?? []);
-      setLoading(false);
-    })();
+    fetchExercises();
   }, []);
 
   const muscles = useMemo(() => Array.from(new Set(items.map((i) => i.muscle_group))).sort(), [items]);
@@ -69,6 +75,9 @@ const ExerciseLibrary = () => {
           </Button>
           <Dumbbell className="w-5 h-5 text-primary" />
           <h1 className="text-lg font-bold text-foreground">Biblioteca de exercícios</h1>
+          <Button variant="outline" size="sm" onClick={() => navigate("/exercises/new")} className="ml-auto border-primary/50 text-primary">
+            <Plus className="w-4 h-4 mr-1" /> Novo
+          </Button>
         </div>
       </header>
 
@@ -132,7 +141,7 @@ const ExerciseLibrary = () => {
                 className="glass-card p-2 text-left space-y-2 hover:ring-1 hover:ring-primary/50 transition"
               >
                 <div className="aspect-square w-full overflow-hidden rounded-md bg-secondary">
-                  <ExerciseMedia src={ex.gif_url} alt={ex.name} />
+                  <ExerciseMedia src={ex.gif_url} videoUrl={ex.video_url} imageUrl={ex.image_url} alt={ex.name} />
                 </div>
                 <p className="text-xs font-semibold text-foreground line-clamp-2">{ex.name}</p>
                 <p className="text-[10px] text-muted-foreground">{ex.muscle_group}</p>
@@ -151,7 +160,23 @@ const ExerciseLibrary = () => {
                 <Button variant="ghost" size="sm" onClick={() => setActive(null)}>Fechar</Button>
               </div>
               <div className="w-full aspect-video rounded-lg overflow-hidden bg-secondary">
-                <ExerciseMedia src={active.gif_url} alt={active.name} />
+                <ExerciseMedia src={active.gif_url} videoUrl={active.video_url} imageUrl={active.image_url} alt={active.name} />
+              </div>
+              
+              <div className="pt-2 border-t border-border">
+                <p className="text-xs font-semibold text-muted-foreground mb-2">Gerenciar Mídia (Treinador)</p>
+                <MediaUpload 
+                  exerciseId={active.id} 
+                  currentMedia={{ 
+                    gif_url: active.gif_url, 
+                    video_url: active.video_url, 
+                    image_url: active.image_url 
+                  }}
+                  onSuccess={() => {
+                    fetchExercises();
+                    setActive(null);
+                  }} 
+                />
               </div>
               <div className="flex flex-wrap gap-2 text-xs">
                 <span className="px-2 py-1 rounded-full bg-primary/10 text-primary">{active.muscle_group}</span>

@@ -14,6 +14,8 @@ interface Exercise {
   name: string;
   muscle_group: string;
   gif_url: string | null;
+  video_url?: string | null;
+  image_url?: string | null;
 }
 
 interface WorkoutExercise {
@@ -51,7 +53,7 @@ const WorkoutEditor = () => {
     if (!workoutId) return;
     const { data } = await supabase
       .from("workout_exercises")
-      .select("*, exercises(id,name,muscle_group,gif_url)")
+      .select("*, exercises(id,name,muscle_group,gif_url,video_url,image_url)")
       .eq("workout_id", workoutId)
       .order("order_index");
     setItems((data as WorkoutExercise[]) ?? []);
@@ -63,7 +65,7 @@ const WorkoutEditor = () => {
       const { data: w } = await supabase.from("workouts").select("*").eq("id", workoutId).single();
       setWorkout(w as Workout);
       await loadItems();
-      const { data: ex } = await supabase.from("exercises").select("id,name,muscle_group,gif_url").order("muscle_group").order("name");
+      const { data: ex } = await supabase.from("exercises").select("id,name,muscle_group,gif_url,video_url,image_url").order("muscle_group").order("name");
       setExercises((ex as Exercise[]) ?? []);
       setLoading(false);
     })();
@@ -136,7 +138,7 @@ const WorkoutEditor = () => {
           <div key={it.id} className="glass-card p-3 space-y-3">
             <div className="flex items-start gap-3">
               <div className="w-16 h-16 rounded-md overflow-hidden bg-secondary shrink-0">
-                <ExerciseMedia src={it.exercises?.gif_url} alt={it.exercises?.name} />
+                <ExerciseMedia src={it.exercises?.gif_url} videoUrl={it.exercises?.video_url} imageUrl={it.exercises?.image_url} alt={it.exercises?.name} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-foreground truncate">{idx + 1}. {it.exercises?.name}</p>
@@ -186,7 +188,7 @@ const WorkoutEditor = () => {
               {filteredEx.map((ex) => (
                 <button key={ex.id} onClick={() => addExercise(ex.id)} className="w-full glass-card p-2 flex items-center gap-3 text-left hover:ring-1 hover:ring-primary/50">
                   <div className="w-12 h-12 rounded-md bg-secondary overflow-hidden shrink-0">
-                    <ExerciseMedia src={ex.gif_url} alt={ex.name} />
+                    <ExerciseMedia src={ex.gif_url} videoUrl={ex.video_url} imageUrl={ex.image_url} alt={ex.name} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{ex.name}</p>
