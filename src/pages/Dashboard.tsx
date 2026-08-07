@@ -190,6 +190,11 @@ const Dashboard = () => {
                 <UserPlus className="w-5 h-5 text-primary" />
               </Button>
             )}
+            <Avatar className="w-8 h-8 border border-border ml-1">
+              <AvatarFallback className="bg-secondary">
+                <User className="w-4 h-4 text-muted-foreground" />
+              </AvatarFallback>
+            </Avatar>
             <Button variant="ghost" size="icon" onClick={signOut}>
               <LogOut className="w-5 h-5 text-muted-foreground" />
             </Button>
