@@ -1,0 +1,10 @@
+UPDATE public.exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lever_Chest_Press/0.jpg' WHERE name = 'Supino Máquina';
+UPDATE public.exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Machine_Bench_Press/0.jpg' WHERE name = 'Supino Smith';
+UPDATE public.exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lever_Pec_Deck_Fly/0.jpg' WHERE name = 'Peck Deck';
+UPDATE public.exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Flyes/0.jpg' WHERE name = 'Crucifixo com Halteres';
+UPDATE public.exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg' WHERE name = 'Flexão de Braço';
+UPDATE public.exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Crossover/0.jpg' WHERE name = 'Crossover Polia Alta';
+UPDATE public.exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lever_Chest_Press/0.jpg' WHERE name = 'Chest Press';
+UPDATE public.exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Romanian_Deadlift/0.jpg' WHERE name = 'Stiff com Halteres';
+UPDATE public.exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Leg_Curls/0.jpg' WHERE name = 'Mesa Flexora';
+UPDATE public.exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hack_Squat/0.jpg' WHERE name = 'Hack Machine';
