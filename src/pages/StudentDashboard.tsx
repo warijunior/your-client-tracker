@@ -21,6 +21,7 @@ interface StudentRecord {
   goal: string | null;
   weight: number | null;
   trainer_id: string;
+  avatar_url?: string | null;
 }
 
 interface Checkin {
