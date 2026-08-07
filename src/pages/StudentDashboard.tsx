@@ -267,8 +267,31 @@ const StudentDashboard = () => {
       {/* Header */}
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border p-4">
         <div className="flex items-center justify-between max-w-lg mx-auto">
-          <div className="flex items-center gap-2">
-            <XCLogo size={28} />
+          <div className="flex items-center gap-3">
+            <div className="relative group">
+              <Avatar className="w-10 h-10 border border-primary/20">
+                <AvatarImage src={student.avatar_url || ""} alt={student.full_name} className="object-cover" />
+                <AvatarFallback className="bg-secondary">
+                  <User className="w-5 h-5 text-muted-foreground" />
+                </AvatarFallback>
+              </Avatar>
+              <label 
+                htmlFor="avatar-upload-student" 
+                className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity"
+              >
+                <Camera className="w-3 h-3 text-white" />
+                <input 
+                  id="avatar-upload-student" 
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden" 
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleAvatarUpload(file);
+                  }}
+                />
+              </label>
+            </div>
             <div>
               <h1 className="text-sm font-bold text-foreground">Olá, {student.full_name.split(" ")[0]}!</h1>
               <p className="text-xs text-muted-foreground">{student.goal ? `Objetivo: ${student.goal}` : "XC Consultoria Esportiva"}</p>
