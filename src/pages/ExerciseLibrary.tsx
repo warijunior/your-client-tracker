@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Search, Dumbbell, Plus } from "lucide-react";
+import { ArrowLeft, Search, Dumbbell, Plus, Maximize2 } from "lucide-react";
 import { MediaUpload } from "@/components/MediaUpload";
 
 interface Exercise {
@@ -159,8 +159,18 @@ const ExerciseLibrary = () => {
                 <h2 className="text-lg font-bold text-foreground">{active.name}</h2>
                 <Button variant="ghost" size="sm" onClick={() => setActive(null)}>Fechar</Button>
               </div>
-              <div className="w-full aspect-video rounded-lg overflow-hidden bg-secondary">
+              <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-secondary group">
                 <ExerciseMedia src={active.gif_url} videoUrl={active.video_url} imageUrl={active.image_url} alt={active.name} />
+                <button 
+                  className="absolute top-2 right-2 p-2 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const media = active.gif_url || active.video_url || active.image_url;
+                    if (media) window.open(media, '_blank');
+                  }}
+                >
+                  <Maximize2 className="w-4 h-4" />
+                </button>
               </div>
               
               <div className="pt-2 border-t border-border">
