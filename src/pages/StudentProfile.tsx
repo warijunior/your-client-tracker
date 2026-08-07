@@ -88,6 +88,42 @@ const StudentProfile = () => {
     if (data) setStudent(data);
   };
 
+  const handleAvatarUpload = async (file: File) => {
+    if (!student) return;
+
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${student.id}-${Math.random()}.${fileExt}`;
+      const filePath = `${user!.id}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from("students")
+        .update({ avatar_url: publicUrl })
+        .eq("id", student.id);
+
+      if (updateError) throw updateError;
+
+      setStudent({ ...student, avatar_url: publicUrl });
+      toast({ title: "Foto de perfil atualizada!" });
+    } catch (error: any) {
+      toast({
+        title: "Erro ao fazer upload",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   const fetchAssessments = async () => {
     const { data } = await supabase.from("assessments").select("*").eq("student_id", id!).order("assessed_at", { ascending: true });
     if (data) setAssessments(data);
