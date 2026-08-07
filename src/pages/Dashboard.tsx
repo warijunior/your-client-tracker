@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, LogOut, Users, TrendingUp, Calendar, DollarSign, UserPlus, BookOpen, Dumbbell, CheckCircle2, BellRing } from "lucide-react";
+import { Plus, Search, LogOut, Users, TrendingUp, Calendar, DollarSign, UserPlus, BookOpen, Dumbbell, CheckCircle2, BellRing, Trash2, User } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { XCLogo } from "@/components/XCLogo";
 import StudentCard from "@/components/StudentCard";
 import NotificationBell from "@/components/NotificationBell";
@@ -18,6 +19,7 @@ interface Student {
   weight: number | null;
   height: number | null;
   goal: string | null;
+  avatar_url?: string | null;
 }
 
 interface UpcomingAppointment {
@@ -105,10 +107,29 @@ const Dashboard = () => {
   const fetchStudents = async () => {
     const { data, error } = await supabase
       .from("students")
-      .select("id, full_name, age, weight, height, goal")
+      .select("id, full_name, age, weight, height, goal, avatar_url")
+      .eq("status", "active")
       .order("created_at", { ascending: false });
     if (!error && data) setStudents(data);
     setLoading(false);
+  };
+
+  const deleteStudent = async (studentId: string) => {
+    const { error } = await supabase
+      .from("students")
+      .update({ status: "inactive" })
+      .eq("id", studentId);
+
+    if (error) {
+      toast({
+        title: "Erro ao excluir",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({ title: "Aluno excluído com sucesso" });
+      fetchStudents();
+    }
   };
 
   const fetchUpcoming = async () => {
@@ -170,6 +191,11 @@ const Dashboard = () => {
                 <UserPlus className="w-5 h-5 text-primary" />
               </Button>
             )}
+            <Avatar className="w-8 h-8 border border-border ml-1">
+              <AvatarFallback className="bg-secondary">
+                <User className="w-4 h-4 text-muted-foreground" />
+              </AvatarFallback>
+            </Avatar>
             <Button variant="ghost" size="icon" onClick={signOut}>
               <LogOut className="w-5 h-5 text-muted-foreground" />
             </Button>
@@ -269,6 +295,7 @@ const Dashboard = () => {
                 key={student.id}
                 student={student}
                 onClick={() => navigate(`/students/${student.id}`)}
+                onDelete={() => deleteStudent(student.id)}
               />
             ))
           )}

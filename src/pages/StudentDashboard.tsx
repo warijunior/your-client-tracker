@@ -8,7 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dumbbell, LogOut, CheckCircle2, Calendar, TrendingUp, ChevronLeft, ChevronRight, MessageCircle, Camera, DollarSign, ClipboardList } from "lucide-react";
+import { Dumbbell, LogOut, CheckCircle2, Calendar, TrendingUp, ChevronLeft, ChevronRight, MessageCircle, Camera, DollarSign, ClipboardList, User, Upload, Loader2 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { XCLogo } from "@/components/XCLogo";
 import { useToast } from "@/hooks/use-toast";
 import NotificationBell from "@/components/NotificationBell";
@@ -21,6 +22,7 @@ interface StudentRecord {
   goal: string | null;
   weight: number | null;
   trainer_id: string;
+  avatar_url?: string | null;
 }
 
 interface Checkin {
@@ -85,7 +87,7 @@ const StudentDashboard = () => {
   const fetchData = async () => {
     const { data: studentData } = await supabase
       .from("students")
-      .select("id, full_name, goal, weight, trainer_id")
+      .select("id, full_name, goal, weight, trainer_id, avatar_url")
       .eq("user_id", user!.id)
       .limit(1)
       .single();
@@ -166,6 +168,42 @@ const StudentDashboard = () => {
     setSubmitting(false);
   };
 
+  const handleAvatarUpload = async (file: File) => {
+    if (!student || !user) return;
+
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${student.id}-${Math.random()}.${fileExt}`;
+      const filePath = `${user.id}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from("students")
+        .update({ avatar_url: publicUrl })
+        .eq("id", student.id);
+
+      if (updateError) throw updateError;
+
+      setStudent({ ...student, avatar_url: publicUrl });
+      toast({ title: "Foto de perfil atualizada!" });
+    } catch (error: any) {
+      toast({
+        title: "Erro ao fazer upload",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   // Calendar helpers
   const getDaysInMonth = (date: Date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
   const getFirstDayOfMonth = (date: Date) => new Date(date.getFullYear(), date.getMonth(), 1).getDay();
@@ -229,8 +267,31 @@ const StudentDashboard = () => {
       {/* Header */}
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border p-4">
         <div className="flex items-center justify-between max-w-lg mx-auto">
-          <div className="flex items-center gap-2">
-            <XCLogo size={28} />
+          <div className="flex items-center gap-3">
+            <div className="relative group">
+              <Avatar className="w-10 h-10 border border-primary/20">
+                <AvatarImage src={student.avatar_url || ""} alt={student.full_name} className="object-cover" />
+                <AvatarFallback className="bg-secondary">
+                  <User className="w-5 h-5 text-muted-foreground" />
+                </AvatarFallback>
+              </Avatar>
+              <label 
+                htmlFor="avatar-upload-student" 
+                className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity"
+              >
+                <Camera className="w-3 h-3 text-white" />
+                <input 
+                  id="avatar-upload-student" 
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden" 
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleAvatarUpload(file);
+                  }}
+                />
+              </label>
+            </div>
             <div>
               <h1 className="text-sm font-bold text-foreground">Olá, {student.full_name.split(" ")[0]}!</h1>
               <p className="text-xs text-muted-foreground">{student.goal ? `Objetivo: ${student.goal}` : "XC Consultoria Esportiva"}</p>

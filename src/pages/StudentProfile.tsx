@@ -4,8 +4,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, User, Activity, FileText, Plus, Calendar, Camera, DollarSign, MessageCircle, Trash2, Dumbbell } from "lucide-react";
+import { ArrowLeft, User, Activity, FileText, Plus, Calendar, Camera, DollarSign, MessageCircle, Trash2, Dumbbell, Upload, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AssessmentForm from "@/components/AssessmentForm";
 import ProtocolForm from "@/components/ProtocolForm";
 import WeightChart from "@/components/WeightChart";
@@ -24,6 +25,7 @@ interface Student {
   health_history: string | null;
   notes: string | null;
   user_id: string | null;
+  avatar_url?: string | null;
 }
 
 interface Assessment {
@@ -84,6 +86,42 @@ const StudentProfile = () => {
   const fetchStudent = async () => {
     const { data } = await supabase.from("students").select("*").eq("id", id!).single();
     if (data) setStudent(data);
+  };
+
+  const handleAvatarUpload = async (file: File) => {
+    if (!student) return;
+
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${student.id}-${Math.random()}.${fileExt}`;
+      const filePath = `${user!.id}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from("students")
+        .update({ avatar_url: publicUrl })
+        .eq("id", student.id);
+
+      if (updateError) throw updateError;
+
+      setStudent({ ...student, avatar_url: publicUrl });
+      toast({ title: "Foto de perfil atualizada!" });
+    } catch (error: any) {
+      toast({
+        title: "Erro ao fazer upload",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
   const fetchAssessments = async () => {
@@ -177,8 +215,29 @@ const StudentProfile = () => {
         {/* Profile Card */}
         <div className="glass-card p-5 space-y-4">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center">
-              <User className="w-7 h-7 text-muted-foreground" />
+            <div className="relative group">
+              <Avatar className="w-16 h-16 border-2 border-primary/20">
+                <AvatarImage src={student.avatar_url || ""} alt={student.full_name} className="object-cover" />
+                <AvatarFallback className="bg-secondary">
+                  <User className="w-8 h-8 text-muted-foreground" />
+                </AvatarFallback>
+              </Avatar>
+              <label 
+                htmlFor="avatar-upload" 
+                className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity"
+              >
+                <Camera className="w-5 h-5 text-white" />
+                <input 
+                  id="avatar-upload" 
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden" 
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleAvatarUpload(file);
+                  }}
+                />
+              </label>
             </div>
             <div>
               <h2 className="text-xl font-bold text-foreground">{student.full_name}</h2>

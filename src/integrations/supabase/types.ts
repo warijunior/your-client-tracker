@@ -479,6 +479,7 @@ export type Database = {
       students: {
         Row: {
           age: number | null
+          avatar_url: string | null
           created_at: string
           email: string | null
           full_name: string
@@ -487,6 +488,7 @@ export type Database = {
           height: number | null
           id: string
           notes: string | null
+          status: string | null
           trainer_id: string
           updated_at: string
           user_id: string | null
@@ -494,6 +496,7 @@ export type Database = {
         }
         Insert: {
           age?: number | null
+          avatar_url?: string | null
           created_at?: string
           email?: string | null
           full_name: string
@@ -502,6 +505,7 @@ export type Database = {
           height?: number | null
           id?: string
           notes?: string | null
+          status?: string | null
           trainer_id: string
           updated_at?: string
           user_id?: string | null
@@ -509,6 +513,7 @@ export type Database = {
         }
         Update: {
           age?: number | null
+          avatar_url?: string | null
           created_at?: string
           email?: string | null
           full_name?: string
@@ -517,6 +522,7 @@ export type Database = {
           height?: number | null
           id?: string
           notes?: string | null
+          status?: string | null
           trainer_id?: string
           updated_at?: string
           user_id?: string | null
