@@ -18,6 +18,7 @@ interface Student {
   weight: number | null;
   height: number | null;
   goal: string | null;
+  avatar_url?: string | null;
 }
 
 interface UpcomingAppointment {
