@@ -161,6 +161,50 @@ export type Database = {
           },
         ]
       }
+      exam_followups: {
+        Row: {
+          created_at: string
+          guidance: string | null
+          id: string
+          next_date: string | null
+          periodicity: string | null
+          required: boolean
+          student_id: string
+          trainer_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          guidance?: string | null
+          id?: string
+          next_date?: string | null
+          periodicity?: string | null
+          required?: boolean
+          student_id: string
+          trainer_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          guidance?: string | null
+          id?: string
+          next_date?: string | null
+          periodicity?: string | null
+          required?: boolean
+          student_id?: string
+          trainer_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_followups_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       exercise_logs: {
         Row: {
           id: string
@@ -259,6 +303,41 @@ export type Database = {
           video_url?: string | null
         }
         Relationships: []
+      }
+      hydration_goals: {
+        Row: {
+          created_at: string
+          daily_goal_ml: number
+          id: string
+          student_id: string
+          trainer_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          daily_goal_ml?: number
+          id?: string
+          student_id: string
+          trainer_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          daily_goal_ml?: number
+          id?: string
+          student_id?: string
+          trainer_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hydration_goals_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       messages: {
         Row: {
@@ -530,6 +609,104 @@ export type Database = {
         }
         Relationships: []
       }
+      supplement_logs: {
+        Row: {
+          created_at: string
+          id: string
+          log_date: string
+          student_id: string
+          supplement_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          log_date?: string
+          student_id: string
+          supplement_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          log_date?: string
+          student_id?: string
+          supplement_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplement_logs_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplement_logs_supplement_id_fkey"
+            columns: ["supplement_id"]
+            isOneToOne: false
+            referencedRelation: "supplements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      supplements: {
+        Row: {
+          created_at: string
+          dosage: number | null
+          end_date: string | null
+          frequency: string | null
+          id: string
+          name: string
+          notes: string | null
+          schedule: string | null
+          start_date: string
+          student_id: string
+          trainer_id: string
+          unit: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          dosage?: number | null
+          end_date?: string | null
+          frequency?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          schedule?: string | null
+          start_date?: string
+          student_id: string
+          trainer_id: string
+          unit?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          dosage?: number | null
+          end_date?: string | null
+          frequency?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          schedule?: string | null
+          start_date?: string
+          student_id?: string
+          trainer_id?: string
+          unit?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplements_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trainer_invites: {
         Row: {
           created_at: string
@@ -574,6 +751,41 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      water_logs: {
+        Row: {
+          amount_ml: number
+          created_at: string
+          id: string
+          log_date: string
+          student_id: string
+          user_id: string
+        }
+        Insert: {
+          amount_ml: number
+          created_at?: string
+          id?: string
+          log_date?: string
+          student_id: string
+          user_id: string
+        }
+        Update: {
+          amount_ml?: number
+          created_at?: string
+          id?: string
+          log_date?: string
+          student_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "water_logs_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       workout_exercises: {
         Row: {

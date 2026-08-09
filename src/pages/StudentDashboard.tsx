@@ -8,13 +8,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dumbbell, LogOut, CheckCircle2, Calendar, TrendingUp, ChevronLeft, ChevronRight, MessageCircle, Camera, DollarSign, ClipboardList, User, Upload, Loader2 } from "lucide-react";
+import { Dumbbell, LogOut, CheckCircle2, Calendar, TrendingUp, ChevronLeft, ChevronRight, MessageCircle, Camera, DollarSign, ClipboardList, User, Upload, Loader2, Droplets, Pill, FlaskConical } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { XCLogo } from "@/components/XCLogo";
 import { useToast } from "@/hooks/use-toast";
 import NotificationBell from "@/components/NotificationBell";
 import ChatWindow from "@/components/ChatWindow";
 import PhotoGallery from "@/components/PhotoGallery";
+import HydrationPanel from "@/components/HydrationPanel";
+import SupplementsPanel from "@/components/SupplementsPanel";
+import ExamsPanel from "@/components/ExamsPanel";
+import FollowUpPanel from "@/components/FollowUpPanel";
+
 
 interface StudentRecord {
   id: string;
@@ -343,23 +348,58 @@ const StudentDashboard = () => {
         )}
 
         <Tabs defaultValue="checkin" className="w-full">
-          <TabsList className="w-full bg-secondary grid grid-cols-5">
-            <TabsTrigger value="checkin" className="text-xs">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-            </TabsTrigger>
-            <TabsTrigger value="calendar" className="text-xs">
-              <Calendar className="w-3.5 h-3.5" />
-            </TabsTrigger>
-            <TabsTrigger value="protocols" className="text-xs">
-              <TrendingUp className="w-3.5 h-3.5" />
-            </TabsTrigger>
-            <TabsTrigger value="photos" className="text-xs">
-              <Camera className="w-3.5 h-3.5" />
-            </TabsTrigger>
-            <TabsTrigger value="payments" className="text-xs">
-              <DollarSign className="w-3.5 h-3.5" />
-            </TabsTrigger>
-          </TabsList>
+          <div className="-mx-4 px-4 overflow-x-auto scrollbar-none">
+            <TabsList className="bg-secondary inline-flex w-auto gap-1">
+              <TabsTrigger value="checkin" className="text-xs whitespace-nowrap">
+                <CheckCircle2 className="w-3.5 h-3.5 mr-1" />Check-in
+              </TabsTrigger>
+              <TabsTrigger value="calendar" className="text-xs whitespace-nowrap">
+                <Calendar className="w-3.5 h-3.5 mr-1" />Agenda
+              </TabsTrigger>
+              <TabsTrigger value="protocols" className="text-xs whitespace-nowrap">
+                <TrendingUp className="w-3.5 h-3.5 mr-1" />Protocolo
+              </TabsTrigger>
+              <TabsTrigger value="hydration" className="text-xs whitespace-nowrap">
+                <Droplets className="w-3.5 h-3.5 mr-1" />Hidratação
+              </TabsTrigger>
+              <TabsTrigger value="supplements" className="text-xs whitespace-nowrap">
+                <Pill className="w-3.5 h-3.5 mr-1" />Suplementação
+              </TabsTrigger>
+              <TabsTrigger value="exams" className="text-xs whitespace-nowrap">
+                <FlaskConical className="w-3.5 h-3.5 mr-1" />Exames
+              </TabsTrigger>
+              <TabsTrigger value="followup" className="text-xs whitespace-nowrap">
+                <ClipboardList className="w-3.5 h-3.5 mr-1" />Acompanhamento
+              </TabsTrigger>
+              <TabsTrigger value="photos" className="text-xs whitespace-nowrap">
+                <Camera className="w-3.5 h-3.5 mr-1" />Fotos
+              </TabsTrigger>
+              <TabsTrigger value="payments" className="text-xs whitespace-nowrap">
+                <DollarSign className="w-3.5 h-3.5 mr-1" />Pgto
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          {/* Hidratação */}
+          <TabsContent value="hydration" className="mt-4">
+            <HydrationPanel studentId={student.id} mode="student" userId={user!.id} />
+          </TabsContent>
+
+          {/* Suplementação */}
+          <TabsContent value="supplements" className="mt-4">
+            <SupplementsPanel studentId={student.id} mode="student" userId={user!.id} />
+          </TabsContent>
+
+          {/* Exames */}
+          <TabsContent value="exams" className="mt-4">
+            <ExamsPanel studentId={student.id} mode="student" userId={user!.id} />
+          </TabsContent>
+
+          {/* Acompanhamento */}
+          <TabsContent value="followup" className="mt-4">
+            <FollowUpPanel studentId={student.id} />
+          </TabsContent>
+
 
           {/* Check-in Tab */}
           <TabsContent value="checkin" className="mt-4 space-y-4">
