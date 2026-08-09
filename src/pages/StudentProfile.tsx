@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, User, Activity, FileText, Plus, Calendar, Camera, DollarSign, MessageCircle, Trash2, Dumbbell, Upload, Loader2 } from "lucide-react";
+import { ArrowLeft, User, Activity, FileText, Plus, Calendar, Camera, DollarSign, MessageCircle, Trash2, Dumbbell, Upload, Loader2, LayoutDashboard, Droplets, Pill, FlaskConical, ClipboardList } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AssessmentForm from "@/components/AssessmentForm";
@@ -14,6 +14,11 @@ import AppointmentForm from "@/components/AppointmentForm";
 import PhotoGallery from "@/components/PhotoGallery";
 import PaymentManager from "@/components/PaymentManager";
 import ChatWindow from "@/components/ChatWindow";
+import HydrationPanel from "@/components/HydrationPanel";
+import SupplementsPanel from "@/components/SupplementsPanel";
+import ExamsPanel from "@/components/ExamsPanel";
+import FollowUpPanel from "@/components/FollowUpPanel";
+
 
 interface Student {
   id: string;
