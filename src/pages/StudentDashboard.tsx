@@ -8,13 +8,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dumbbell, LogOut, CheckCircle2, Calendar, TrendingUp, ChevronLeft, ChevronRight, MessageCircle, Camera, DollarSign, ClipboardList, User, Upload, Loader2 } from "lucide-react";
+import { Dumbbell, LogOut, CheckCircle2, Calendar, TrendingUp, ChevronLeft, ChevronRight, MessageCircle, Camera, DollarSign, ClipboardList, User, Upload, Loader2, Droplets, Pill, FlaskConical } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { XCLogo } from "@/components/XCLogo";
 import { useToast } from "@/hooks/use-toast";
 import NotificationBell from "@/components/NotificationBell";
 import ChatWindow from "@/components/ChatWindow";
 import PhotoGallery from "@/components/PhotoGallery";
+import HydrationPanel from "@/components/HydrationPanel";
+import SupplementsPanel from "@/components/SupplementsPanel";
+import ExamsPanel from "@/components/ExamsPanel";
+import FollowUpPanel from "@/components/FollowUpPanel";
+
 
 interface StudentRecord {
   id: string;
