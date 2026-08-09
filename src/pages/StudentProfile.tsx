@@ -270,27 +270,113 @@ const StudentProfile = () => {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="evolution" className="w-full">
-          <TabsList className="w-full bg-secondary grid grid-cols-3 sm:grid-cols-6">
-            <TabsTrigger value="evolution" className="text-xs">
-              <Activity className="w-3.5 h-3.5 sm:mr-1" /><span className="hidden sm:inline">Evolução</span>
-            </TabsTrigger>
-            <TabsTrigger value="assessments" className="text-xs">
-              <FileText className="w-3.5 h-3.5 sm:mr-1" /><span className="hidden sm:inline">Avaliações</span>
-            </TabsTrigger>
-            <TabsTrigger value="protocols" className="text-xs">
-              <FileText className="w-3.5 h-3.5 sm:mr-1" /><span className="hidden sm:inline">Protocolos</span>
-            </TabsTrigger>
-            <TabsTrigger value="schedule" className="text-xs">
-              <Calendar className="w-3.5 h-3.5 sm:mr-1" /><span className="hidden sm:inline">Agenda</span>
-            </TabsTrigger>
-            <TabsTrigger value="photos" className="text-xs">
-              <Camera className="w-3.5 h-3.5 sm:mr-1" /><span className="hidden sm:inline">Fotos</span>
-            </TabsTrigger>
-            <TabsTrigger value="payments" className="text-xs">
-              <DollarSign className="w-3.5 h-3.5 sm:mr-1" /><span className="hidden sm:inline">Pgto</span>
-            </TabsTrigger>
-          </TabsList>
+        <Tabs defaultValue="overview" className="w-full">
+          <div className="-mx-4 px-4 overflow-x-auto scrollbar-none">
+            <TabsList className="bg-secondary inline-flex w-auto gap-1">
+              <TabsTrigger value="overview" className="text-xs whitespace-nowrap">
+                <LayoutDashboard className="w-3.5 h-3.5 mr-1" />Visão Geral
+              </TabsTrigger>
+              <TabsTrigger value="protocols" className="text-xs whitespace-nowrap">
+                <FileText className="w-3.5 h-3.5 mr-1" />Dieta / Treino
+              </TabsTrigger>
+              <TabsTrigger value="hydration" className="text-xs whitespace-nowrap">
+                <Droplets className="w-3.5 h-3.5 mr-1" />Hidratação
+              </TabsTrigger>
+              <TabsTrigger value="supplements" className="text-xs whitespace-nowrap">
+                <Pill className="w-3.5 h-3.5 mr-1" />Suplementação
+              </TabsTrigger>
+              <TabsTrigger value="exams" className="text-xs whitespace-nowrap">
+                <FlaskConical className="w-3.5 h-3.5 mr-1" />Exames
+              </TabsTrigger>
+              <TabsTrigger value="followup" className="text-xs whitespace-nowrap">
+                <ClipboardList className="w-3.5 h-3.5 mr-1" />Acompanhamento
+              </TabsTrigger>
+              <TabsTrigger value="evolution" className="text-xs whitespace-nowrap">
+                <Activity className="w-3.5 h-3.5 mr-1" />Evolução
+              </TabsTrigger>
+              <TabsTrigger value="assessments" className="text-xs whitespace-nowrap">
+                <FileText className="w-3.5 h-3.5 mr-1" />Avaliações
+              </TabsTrigger>
+              <TabsTrigger value="schedule" className="text-xs whitespace-nowrap">
+                <Calendar className="w-3.5 h-3.5 mr-1" />Agenda
+              </TabsTrigger>
+              <TabsTrigger value="photos" className="text-xs whitespace-nowrap">
+                <Camera className="w-3.5 h-3.5 mr-1" />Fotos
+              </TabsTrigger>
+              <TabsTrigger value="payments" className="text-xs whitespace-nowrap">
+                <DollarSign className="w-3.5 h-3.5 mr-1" />Pgto
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          {/* Visão Geral */}
+          <TabsContent value="overview" className="mt-4 space-y-3">
+            <div className="glass-card p-5 space-y-4">
+              <div className="flex items-center gap-3">
+                <Avatar className="w-12 h-12 border border-primary/20">
+                  <AvatarImage src={student.avatar_url || ""} alt={student.full_name} className="object-cover" />
+                  <AvatarFallback className="bg-secondary"><User className="w-6 h-6 text-muted-foreground" /></AvatarFallback>
+                </Avatar>
+                <div>
+                  <h3 className="font-bold text-foreground">{student.full_name}</h3>
+                  <p className="text-xs text-primary">{student.goal ? goalLabels[student.goal] || student.goal : "Objetivo não definido"}</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 rounded-lg bg-secondary">
+                  <p className="text-[11px] text-muted-foreground">Peso atual</p>
+                  <p className="font-bold text-foreground">{lastAssessment?.weight ?? student.weight ?? "—"} kg</p>
+                </div>
+                <div className="p-3 rounded-lg bg-secondary">
+                  <p className="text-[11px] text-muted-foreground">Altura</p>
+                  <p className="font-bold text-foreground">{student.height ? `${student.height} m` : "—"}</p>
+                </div>
+                <div className="p-3 rounded-lg bg-secondary">
+                  <p className="text-[11px] text-muted-foreground">% de gordura</p>
+                  <p className="font-bold text-foreground">{lastAssessment?.body_fat != null ? `${lastAssessment.body_fat}%` : "—"}</p>
+                </div>
+                <div className="p-3 rounded-lg bg-secondary">
+                  <p className="text-[11px] text-muted-foreground">Status</p>
+                  <p className="font-bold text-primary">{protocols.some((p) => p.active) ? "Em acompanhamento" : "Sem protocolo ativo"}</p>
+                </div>
+              </div>
+              <div className="space-y-1 text-xs pt-1 border-t border-border">
+                <div className="flex justify-between pt-2">
+                  <span className="text-muted-foreground">Última atualização</span>
+                  <span className="text-foreground">
+                    {lastAssessment ? new Date(`${lastAssessment.assessed_at}T12:00:00`).toLocaleDateString("pt-BR") : protocols[0] ? new Date(protocols[0].created_at).toLocaleDateString("pt-BR") : "—"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Próxima avaliação</span>
+                  <span className="text-foreground">
+                    {appointments[0] ? `${new Date(`${appointments[0].appointment_date}T12:00:00`).toLocaleDateString("pt-BR")} • ${appointments[0].start_time.slice(0, 5)}` : "—"}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <FollowUpPanel studentId={id!} />
+          </TabsContent>
+
+          {/* Hidratação */}
+          <TabsContent value="hydration" className="mt-4">
+            <HydrationPanel studentId={id!} mode="trainer" userId={user!.id} />
+          </TabsContent>
+
+          {/* Suplementação */}
+          <TabsContent value="supplements" className="mt-4">
+            <SupplementsPanel studentId={id!} mode="trainer" userId={user!.id} />
+          </TabsContent>
+
+          {/* Exames */}
+          <TabsContent value="exams" className="mt-4">
+            <ExamsPanel studentId={id!} mode="trainer" userId={user!.id} />
+          </TabsContent>
+
+          {/* Acompanhamento */}
+          <TabsContent value="followup" className="mt-4">
+            <FollowUpPanel studentId={id!} />
+          </TabsContent>
 
           <TabsContent value="evolution" className="mt-4">
             {assessments.length > 1 ? (
@@ -301,6 +387,7 @@ const StudentProfile = () => {
               </div>
             )}
           </TabsContent>
+
 
           <TabsContent value="assessments" className="mt-4 space-y-3">
             <Button onClick={() => setShowAssessmentForm(true)} className="w-full gradient-primary text-primary-foreground">
