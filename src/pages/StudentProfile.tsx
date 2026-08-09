@@ -192,6 +192,10 @@ const StudentProfile = () => {
     reabilitacao: "🩺 Reabilitação",
   };
 
+  const lastAssessment = assessments.length ? assessments[assessments.length - 1] : null;
+
+
+
   return (
     <div className="min-h-screen bg-background pb-8">
       {/* Header */}
