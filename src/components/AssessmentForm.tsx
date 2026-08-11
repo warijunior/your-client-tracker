@@ -35,24 +35,29 @@ const AssessmentForm = ({ studentId, trainerId, onClose, onSaved, initialData }:
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.from("assessments").insert({
+    const payload = {
       student_id: studentId,
       trainer_id: trainerId,
       weight: form.weight ? parseFloat(form.weight) : null,
       body_fat: form.body_fat ? parseFloat(form.body_fat) : null,
-      chest: form.chest ? parseFloat(form.chest) : null,
-      waist: form.waist ? parseFloat(form.waist) : null,
-      hips: form.hips ? parseFloat(form.hips) : null,
-      arm: form.arm ? parseFloat(form.arm) : null,
-      thigh: form.thigh ? parseFloat(form.thigh) : null,
+      chest: form.evaluation_type === "complete" && form.chest ? parseFloat(form.chest) : (initialData?.chest ?? null),
+      waist: form.evaluation_type === "complete" && form.waist ? parseFloat(form.waist) : (initialData?.waist ?? null),
+      hips: form.evaluation_type === "complete" && form.hips ? parseFloat(form.hips) : (initialData?.hips ?? null),
+      arm: form.evaluation_type === "complete" && form.arm ? parseFloat(form.arm) : (initialData?.arm ?? null),
+      thigh: form.evaluation_type === "complete" && form.thigh ? parseFloat(form.thigh) : (initialData?.thigh ?? null),
       notes: form.notes || null,
       assessed_at: form.assessed_at,
-    });
+      evaluation_type: form.evaluation_type,
+    };
+
+    const { error } = initialData?.id 
+      ? await supabase.from("assessments").update(payload).eq("id", initialData.id)
+      : await supabase.from("assessments").insert(payload);
 
     if (error) {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Avaliação salva! ✅" });
+      toast({ title: initialData?.id ? "Avaliação atualizada! ✅" : "Avaliação salva! ✅" });
       onSaved();
     }
     setLoading(false);
