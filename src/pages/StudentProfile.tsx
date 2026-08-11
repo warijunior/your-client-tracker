@@ -45,6 +45,7 @@ interface Assessment {
   thigh: number | null;
   notes: string | null;
   assessed_at: string;
+  evaluation_type: "complete" | "simplified";
 }
 
 interface Protocol {
