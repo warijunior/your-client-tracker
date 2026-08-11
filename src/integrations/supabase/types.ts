@@ -120,6 +120,47 @@ export type Database = {
           },
         ]
       }
+      cardio_logs: {
+        Row: {
+          activity_type: string | null
+          created_at: string
+          duration_minutes: number
+          id: string
+          intensity: string | null
+          logged_at: string
+          student_id: string
+          user_id: string
+        }
+        Insert: {
+          activity_type?: string | null
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          intensity?: string | null
+          logged_at?: string
+          student_id: string
+          user_id: string
+        }
+        Update: {
+          activity_type?: string | null
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          intensity?: string | null
+          logged_at?: string
+          student_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cardio_logs_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       checkins: {
         Row: {
           check_date: string
