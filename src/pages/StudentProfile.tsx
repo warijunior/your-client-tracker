@@ -410,7 +410,7 @@ const StudentProfile = () => {
 
 
           <TabsContent value="assessments" className="mt-4 space-y-3">
-            <Button onClick={() => { setEditingAssessment(null); setShowAssessmentForm(true); }} className="w-full gradient-primary text-primary-foreground">
+            <Button onClick={() => { setEditingAssessment(null); setShowAssessmentForm(true); }} className="w-full gradient-neon text-white">
               <Plus className="w-4 h-4 mr-2" /> Nova avaliação
             </Button>
             {assessments.length === 0 ? (
@@ -420,7 +420,7 @@ const StudentProfile = () => {
                 <div key={a.id} className="glass-card p-4 space-y-2 cursor-pointer hover:bg-secondary/50 transition-colors group relative" onClick={() => { setEditingAssessment(a); setShowAssessmentForm(true); }}>
                   <div className="flex items-center justify-between mb-1">
                     <p className="text-xs text-muted-foreground">{new Date(`${a.assessed_at}T12:00:00`).toLocaleDateString("pt-BR")}</p>
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${a.evaluation_type === 'simplified' ? 'bg-blue-500/10 text-blue-500' : 'bg-primary/10 text-primary'}`}>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${a.evaluation_type === 'simplified' ? 'bg-accent/10 text-accent' : 'bg-primary/10 text-primary'}`}>
                       {a.evaluation_type === 'simplified' ? '⚡ SIMPLIFICADA' : '📊 COMPLETA'}
                     </span>
                   </div>
@@ -445,10 +445,10 @@ const StudentProfile = () => {
 
           <TabsContent value="protocols" className="mt-4 space-y-3">
             <div className="flex gap-2">
-              <Button onClick={() => { setProtocolType("training"); setShowProtocolForm(true); }} className="flex-1 gradient-primary text-primary-foreground">
+              <Button onClick={() => { setProtocolType("training"); setShowProtocolForm(true); }} className="flex-1 gradient-primary text-white">
                 <Plus className="w-4 h-4 mr-1" /> Treino
               </Button>
-              <Button onClick={() => { setProtocolType("diet"); setShowProtocolForm(true); }} variant="outline" className="flex-1 border-primary text-primary">
+              <Button onClick={() => { setProtocolType("diet"); setShowProtocolForm(true); }} variant="outline" className="flex-1 border-accent text-accent">
                 <Plus className="w-4 h-4 mr-1" /> Dieta
               </Button>
             </div>
@@ -486,7 +486,7 @@ const StudentProfile = () => {
 
           {/* Schedule Tab */}
           <TabsContent value="schedule" className="mt-4 space-y-3">
-            <Button onClick={() => setShowAppointmentForm(true)} className="w-full gradient-primary text-primary-foreground">
+            <Button onClick={() => setShowAppointmentForm(true)} className="w-full gradient-neon text-white">
               <Plus className="w-4 h-4 mr-2" /> Novo agendamento
             </Button>
             {appointments.length === 0 ? (

@@ -426,7 +426,7 @@ const StudentDashboard = () => {
                 <Label className="text-sm text-muted-foreground">Notas do dia</Label>
                 <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Como foi o treino? Disposição, dores..." className="bg-secondary border-border min-h-[80px]" />
               </div>
-              <Button onClick={handleCheckin} disabled={submitting} className="w-full gradient-primary text-primary-foreground font-semibold h-12 glow-primary">
+              <Button onClick={handleCheckin} disabled={submitting} className="w-full gradient-neon text-white font-semibold h-12 glow-accent">
                 {submitting ? "Salvando..." : todayCheckin ? "Atualizar check-in" : "Registrar check-in"}
               </Button>
             </div>
@@ -453,7 +453,7 @@ const StudentDashboard = () => {
                   const done = checkinDates.has(dateStr);
                   const isToday = dateStr === today;
                   return (
-                    <div key={day} className={`aspect-square flex items-center justify-center rounded-lg text-xs font-medium transition-colors ${done ? "bg-primary/20 text-primary" : isToday ? "bg-secondary text-foreground ring-1 ring-primary/50" : "text-muted-foreground"}`}>
+                    <div key={day} className={`aspect-square flex items-center justify-center rounded-lg text-xs font-medium transition-colors ${done ? "bg-accent/20 text-accent" : isToday ? "bg-secondary text-white ring-1 ring-accent/50" : "text-white/50"}`}>
                       {done ? "✓" : day}
                     </div>
                   );
