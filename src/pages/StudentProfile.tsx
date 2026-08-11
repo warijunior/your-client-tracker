@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, User, Activity, FileText, Plus, Calendar, Camera, DollarSign, MessageCircle, Trash2, Dumbbell, Upload, Loader2, LayoutDashboard, Droplets, Pill, FlaskConical, ClipboardList } from "lucide-react";
+import { ArrowLeft, User, Activity, FileText, Plus, Calendar, Camera, DollarSign, MessageCircle, Trash2, Dumbbell, Upload, Loader2, LayoutDashboard, Droplets, Pill, FlaskConical, ClipboardList, Timer } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AssessmentForm from "@/components/AssessmentForm";
@@ -18,6 +18,7 @@ import HydrationPanel from "@/components/HydrationPanel";
 import SupplementsPanel from "@/components/SupplementsPanel";
 import ExamsPanel from "@/components/ExamsPanel";
 import FollowUpPanel from "@/components/FollowUpPanel";
+import CardioPanel from "@/components/CardioPanel";
 
 
 interface Student {
@@ -288,6 +289,9 @@ const StudentProfile = () => {
               <TabsTrigger value="protocols" className="text-xs whitespace-nowrap">
                 <FileText className="w-3.5 h-3.5 mr-1" />Dieta / Treino
               </TabsTrigger>
+              <TabsTrigger value="cardio" className="text-xs whitespace-nowrap">
+                <Timer className="w-3.5 h-3.5 mr-1" />Cardio
+              </TabsTrigger>
               <TabsTrigger value="hydration" className="text-xs whitespace-nowrap">
                 <Droplets className="w-3.5 h-3.5 mr-1" />Hidratação
               </TabsTrigger>
@@ -365,6 +369,11 @@ const StudentProfile = () => {
               </div>
             </div>
             <FollowUpPanel studentId={id!} />
+          </TabsContent>
+
+          {/* Cardio */}
+          <TabsContent value="cardio" className="mt-4">
+            <CardioPanel studentId={id!} mode="trainer" userId={user!.id} />
           </TabsContent>
 
           {/* Hidratação */}

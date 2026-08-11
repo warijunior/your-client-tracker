@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dumbbell, LogOut, CheckCircle2, Calendar, TrendingUp, ChevronLeft, ChevronRight, MessageCircle, Camera, DollarSign, ClipboardList, User, Upload, Loader2, Droplets, Pill, FlaskConical } from "lucide-react";
+import { Dumbbell, LogOut, CheckCircle2, Calendar, TrendingUp, ChevronLeft, ChevronRight, MessageCircle, Camera, DollarSign, ClipboardList, User, Upload, Loader2, Droplets, Pill, FlaskConical, Timer } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { XCLogo } from "@/components/XCLogo";
 import { useToast } from "@/hooks/use-toast";
@@ -19,6 +19,7 @@ import HydrationPanel from "@/components/HydrationPanel";
 import SupplementsPanel from "@/components/SupplementsPanel";
 import ExamsPanel from "@/components/ExamsPanel";
 import FollowUpPanel from "@/components/FollowUpPanel";
+import CardioPanel from "@/components/CardioPanel";
 
 
 interface StudentRecord {
@@ -359,6 +360,9 @@ const StudentDashboard = () => {
               <TabsTrigger value="protocols" className="text-xs whitespace-nowrap">
                 <TrendingUp className="w-3.5 h-3.5 mr-1" />Protocolo
               </TabsTrigger>
+              <TabsTrigger value="cardio" className="text-xs whitespace-nowrap">
+                <Timer className="w-3.5 h-3.5 mr-1" />Cardio
+              </TabsTrigger>
               <TabsTrigger value="hydration" className="text-xs whitespace-nowrap">
                 <Droplets className="w-3.5 h-3.5 mr-1" />Hidratação
               </TabsTrigger>
@@ -379,6 +383,11 @@ const StudentDashboard = () => {
               </TabsTrigger>
             </TabsList>
           </div>
+
+          {/* Cardio */}
+          <TabsContent value="cardio" className="mt-4">
+            <CardioPanel studentId={student.id} mode="student" userId={user!.id} />
+          </TabsContent>
 
           {/* Hidratação */}
           <TabsContent value="hydration" className="mt-4">
