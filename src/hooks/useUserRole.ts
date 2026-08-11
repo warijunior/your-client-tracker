@@ -30,7 +30,7 @@ export const useUserRole = () => {
         .eq("user_id", user.id)
         .maybeSingle();
       if (cancelled) return;
-      setRole((data?.role as UserRole) ?? null);
+      setRole((data as any)?.role ?? null);
       setLoading(false);
     })();
     return () => { cancelled = true; };
