@@ -45,6 +45,7 @@ interface Assessment {
   thigh: number | null;
   notes: string | null;
   assessed_at: string;
+  evaluation_type?: "complete" | "simplified";
 }
 
 interface Protocol {
@@ -75,6 +76,7 @@ const StudentProfile = () => {
   const [protocols, setProtocols] = useState<Protocol[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [showAssessmentForm, setShowAssessmentForm] = useState(false);
+  const [editingAssessment, setEditingAssessment] = useState<Assessment | null>(null);
   const [showProtocolForm, setShowProtocolForm] = useState(false);
   const [showAppointmentForm, setShowAppointmentForm] = useState(false);
   const [showChat, setShowChat] = useState(false);
@@ -408,25 +410,34 @@ const StudentProfile = () => {
 
 
           <TabsContent value="assessments" className="mt-4 space-y-3">
-            <Button onClick={() => setShowAssessmentForm(true)} className="w-full gradient-primary text-primary-foreground">
+            <Button onClick={() => { setEditingAssessment(null); setShowAssessmentForm(true); }} className="w-full gradient-primary text-primary-foreground">
               <Plus className="w-4 h-4 mr-2" /> Nova avaliação
             </Button>
             {assessments.length === 0 ? (
               <p className="text-center py-8 text-muted-foreground text-sm">Nenhuma avaliação registrada.</p>
             ) : (
               [...assessments].reverse().map((a) => (
-                <div key={a.id} className="glass-card p-4 space-y-2">
-                  <p className="text-xs text-muted-foreground">{new Date(a.assessed_at).toLocaleDateString("pt-BR")}</p>
+                <div key={a.id} className="glass-card p-4 space-y-2 cursor-pointer hover:bg-secondary/50 transition-colors group relative" onClick={() => { setEditingAssessment(a); setShowAssessmentForm(true); }}>
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-xs text-muted-foreground">{new Date(`${a.assessed_at}T12:00:00`).toLocaleDateString("pt-BR")}</p>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${a.evaluation_type === 'simplified' ? 'bg-blue-500/10 text-blue-500' : 'bg-primary/10 text-primary'}`}>
+                      {a.evaluation_type === 'simplified' ? '⚡ SIMPLIFICADA' : '📊 COMPLETA'}
+                    </span>
+                  </div>
                   <div className="grid grid-cols-3 gap-2 text-sm">
                     {a.weight && <div><span className="text-muted-foreground">Peso:</span> <span className="text-foreground font-medium">{a.weight}kg</span></div>}
-                    {a.body_fat && <div><span className="text-muted-foreground">%G:</span> <span className="text-foreground font-medium">{a.body_fat}%</span></div>}
-                    {a.chest && <div><span className="text-muted-foreground">Peito:</span> <span className="text-foreground font-medium">{a.chest}cm</span></div>}
-                    {a.waist && <div><span className="text-muted-foreground">Cintura:</span> <span className="text-foreground font-medium">{a.waist}cm</span></div>}
-                    {a.hips && <div><span className="text-muted-foreground">Quadril:</span> <span className="text-foreground font-medium">{a.hips}cm</span></div>}
-                    {a.arm && <div><span className="text-muted-foreground">Braço:</span> <span className="text-foreground font-medium">{a.arm}cm</span></div>}
-                    {a.thigh && <div><span className="text-muted-foreground">Coxa:</span> <span className="text-foreground font-medium">{a.thigh}cm</span></div>}
+                    {a.evaluation_type !== 'simplified' && (
+                      <>
+                        {a.body_fat && <div><span className="text-muted-foreground">%G:</span> <span className="text-foreground font-medium">{a.body_fat}%</span></div>}
+                        {a.chest && <div><span className="text-muted-foreground">Peito:</span> <span className="text-foreground font-medium">{a.chest}cm</span></div>}
+                        {a.waist && <div><span className="text-muted-foreground">Cintura:</span> <span className="text-foreground font-medium">{a.waist}cm</span></div>}
+                        {a.hips && <div><span className="text-muted-foreground">Quadril:</span> <span className="text-foreground font-medium">{a.hips}cm</span></div>}
+                        {a.arm && <div><span className="text-muted-foreground">Braço:</span> <span className="text-foreground font-medium">{a.arm}cm</span></div>}
+                        {a.thigh && <div><span className="text-muted-foreground">Coxa:</span> <span className="text-foreground font-medium">{a.thigh}cm</span></div>}
+                      </>
+                    )}
                   </div>
-                  {a.notes && <p className="text-xs text-muted-foreground mt-2">{a.notes}</p>}
+                  {a.notes && <p className="text-xs text-muted-foreground mt-2 border-t border-border pt-2 italic line-clamp-2">{a.notes}</p>}
                 </div>
               ))
             )}
@@ -512,7 +523,13 @@ const StudentProfile = () => {
 
       {/* Modals */}
       {showAssessmentForm && (
-        <AssessmentForm studentId={id!} trainerId={user!.id} onClose={() => setShowAssessmentForm(false)} onSaved={() => { setShowAssessmentForm(false); fetchAssessments(); }} />
+        <AssessmentForm 
+          studentId={id!} 
+          trainerId={user!.id} 
+          initialData={editingAssessment}
+          onClose={() => { setShowAssessmentForm(false); setEditingAssessment(null); }} 
+          onSaved={() => { setShowAssessmentForm(false); setEditingAssessment(null); fetchAssessments(); }} 
+        />
       )}
       {showProtocolForm && (
         <ProtocolForm studentId={id!} trainerId={user!.id} type={protocolType} onClose={() => setShowProtocolForm(false)} onSaved={() => { setShowProtocolForm(false); fetchProtocols(); }} />
