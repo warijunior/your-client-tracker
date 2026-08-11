@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Droplets, FlaskConical, Pill } from "lucide-react";
+import { Droplets, FlaskConical, Pill, Timer } from "lucide-react";
 
 interface Props {
   studentId: string;
@@ -21,6 +21,7 @@ interface Summary {
   week: { date: string; total: number }[];
   supplements: { id: string; name: string; dosage: number | null; unit: string; schedule: string | null }[];
   exam: { required: boolean; guidance: string | null; next_date: string | null; periodicity: string | null } | null;
+  cardio: { date: string; total: number }[];
 }
 
 const FollowUpPanel = ({ studentId }: Props) => {
@@ -28,15 +29,19 @@ const FollowUpPanel = ({ studentId }: Props) => {
   const [data, setData] = useState<Summary | null>(null);
 
   const load = useCallback(async () => {
-    const [goalRes, logsRes, supRes, examRes] = await Promise.all([
+    const [goalRes, logsRes, supRes, examRes, cardioRes] = await Promise.all([
       supabase.from("hydration_goals").select("daily_goal_ml").eq("student_id", studentId).maybeSingle(),
       supabase.from("water_logs").select("log_date, amount_ml").eq("student_id", studentId).gte("log_date", daysAgoStr(6)),
       supabase.from("supplements").select("id, name, dosage, unit, schedule").eq("student_id", studentId).order("created_at", { ascending: false }),
       supabase.from("exam_followups").select("required, guidance, next_date, periodicity").eq("student_id", studentId).maybeSingle(),
+      supabase.from("cardio_logs").select("logged_at, duration_minutes").eq("student_id", studentId).gte("logged_at", daysAgoStr(6)),
     ]);
 
     const byDay = new Map<string, number>();
     (logsRes.data ?? []).forEach((l) => byDay.set(l.log_date, (byDay.get(l.log_date) ?? 0) + l.amount_ml));
+    
+    const cardioByDay = new Map<string, number>();
+    (cardioRes.data ?? []).forEach((c) => cardioByDay.set(c.logged_at, (cardioByDay.get(c.logged_at) ?? 0) + c.duration_minutes));
 
     setData({
       goalMl: goalRes.data?.daily_goal_ml ?? null,
@@ -47,6 +52,10 @@ const FollowUpPanel = ({ studentId }: Props) => {
       }),
       supplements: supRes.data ?? [],
       exam: examRes.data ?? null,
+      cardio: Array.from({ length: 7 }).map((_, i) => {
+        const date = daysAgoStr(i);
+        return { date, total: cardioByDay.get(date) ?? 0 };
+      }),
     });
     setLoading(false);
   }, [studentId]);
@@ -105,6 +114,33 @@ const FollowUpPanel = ({ studentId }: Props) => {
             </div>
           </>
         )}
+      </div>
+
+      {/* Cardio */}
+      <div className="glass-card p-4 space-y-3">
+        <h3 className="font-semibold text-foreground text-sm flex items-center gap-2">
+          <Timer className="w-4 h-4 text-primary" /> Cardio
+        </h3>
+        <div className="flex justify-between text-xs">
+          <span className="text-muted-foreground">Tempo de hoje</span>
+          <span className="text-primary font-semibold">{data.cardio.find(c => c.date === todayStr())?.total ?? 0} min</span>
+        </div>
+        <div className="grid grid-cols-7 gap-1 pt-1">
+          {[...data.cardio].reverse().map((d) => {
+            const maxVal = Math.max(...data.cardio.map(c => c.total), 30);
+            const p = Math.min((d.total / maxVal) * 100, 100);
+            return (
+              <div key={d.date} className="flex flex-col items-center gap-1">
+                <div className="w-full h-12 bg-secondary rounded-md flex items-end overflow-hidden">
+                  <div className="w-full bg-primary/70 rounded-md" style={{ height: `${p}%` }} />
+                </div>
+                <span className="text-[9px] text-muted-foreground">
+                  {new Date(`${d.date}T12:00:00`).toLocaleDateString("pt-BR", { day: "2-digit" })}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Suplementação */}
