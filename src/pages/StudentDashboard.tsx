@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -269,16 +269,16 @@ const StudentDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-8">
+    <div className="min-h-screen bg-black pb-8 theme-neon">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border p-4">
+      <header className="sticky top-0 z-10 bg-black/80 backdrop-blur-xl border-b border-white/5 p-4">
         <div className="flex items-center justify-between max-w-lg mx-auto">
           <div className="flex items-center gap-3">
             <div className="relative group">
-              <Avatar className="w-10 h-10 border border-primary/20">
+              <Avatar className="w-10 h-10 border border-accent/20">
                 <AvatarImage src={student.avatar_url || ""} alt={student.full_name} className="object-cover" />
                 <AvatarFallback className="bg-secondary">
-                  <User className="w-5 h-5 text-muted-foreground" />
+                  <User className="w-5 h-5 text-white/50" />
                 </AvatarFallback>
               </Avatar>
               <label 
@@ -299,20 +299,20 @@ const StudentDashboard = () => {
               </label>
             </div>
             <div>
-              <h1 className="text-sm font-bold text-foreground">Olá, {student.full_name.split(" ")[0]}!</h1>
-              <p className="text-xs text-muted-foreground">{student.goal ? `Objetivo: ${student.goal}` : "XC Consultoria Esportiva"}</p>
+              <h1 className="text-sm font-bold text-white">Olá, {student.full_name.split(" ")[0]}!</h1>
+              <p className="text-xs text-white/50">{student.goal ? `Objetivo: ${student.goal}` : "XC Consultoria Esportiva"}</p>
             </div>
           </div>
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" onClick={() => navigate("/my-workouts")} title="Meus treinos">
-              <ClipboardList className="w-5 h-5 text-primary" />
+              <ClipboardList className="w-5 h-5 text-accent" />
             </Button>
             <Button variant="ghost" size="icon" onClick={() => setShowChat(true)}>
-              <MessageCircle className="w-5 h-5 text-primary" />
+              <MessageCircle className="w-5 h-5 text-accent" />
             </Button>
             <NotificationBell />
             <Button variant="ghost" size="icon" onClick={signOut}>
-              <LogOut className="w-5 h-5 text-muted-foreground" />
+              <LogOut className="w-5 h-5 text-white/50" />
             </Button>
           </div>
         </div>
@@ -426,7 +426,7 @@ const StudentDashboard = () => {
                 <Label className="text-sm text-muted-foreground">Notas do dia</Label>
                 <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Como foi o treino? Disposição, dores..." className="bg-secondary border-border min-h-[80px]" />
               </div>
-              <Button onClick={handleCheckin} disabled={submitting} className="w-full gradient-primary text-primary-foreground font-semibold h-12 glow-primary">
+              <Button onClick={handleCheckin} disabled={submitting} className="w-full gradient-neon text-white font-semibold h-12 glow-accent">
                 {submitting ? "Salvando..." : todayCheckin ? "Atualizar check-in" : "Registrar check-in"}
               </Button>
             </div>
@@ -453,7 +453,7 @@ const StudentDashboard = () => {
                   const done = checkinDates.has(dateStr);
                   const isToday = dateStr === today;
                   return (
-                    <div key={day} className={`aspect-square flex items-center justify-center rounded-lg text-xs font-medium transition-colors ${done ? "bg-primary/20 text-primary" : isToday ? "bg-secondary text-foreground ring-1 ring-primary/50" : "text-muted-foreground"}`}>
+                    <div key={day} className={`aspect-square flex items-center justify-center rounded-lg text-xs font-medium transition-colors ${done ? "bg-accent/20 text-accent" : isToday ? "bg-secondary text-white ring-1 ring-accent/50" : "text-white/50"}`}>
                       {done ? "✓" : day}
                     </div>
                   );

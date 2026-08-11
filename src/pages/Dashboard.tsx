@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
@@ -173,31 +173,31 @@ const Dashboard = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-black pb-24 theme-neon">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border p-4">
+      <header className="sticky top-0 z-10 bg-black/80 backdrop-blur-xl border-b border-white/5 p-4">
         <div className="flex items-center justify-between max-w-lg mx-auto">
           <div className="flex items-center gap-2">
             <XCLogo size={28} />
-            <h1 className="text-lg font-bold text-foreground tracking-tight">XC <span className="text-muted-foreground font-medium">Esportiva</span></h1>
+            <h1 className="text-lg font-bold text-white tracking-tight">XC <span className="text-white/50 font-medium">Esportiva</span></h1>
           </div>
           <div className="flex items-center gap-1">
             <NotificationBell />
             <Button variant="ghost" size="icon" onClick={() => navigate("/exercises")} title="Biblioteca de exercícios">
-              <BookOpen className="w-5 h-5 text-primary" />
+              <BookOpen className="w-5 h-5 text-accent" />
             </Button>
             {isAdmin && (
               <Button variant="ghost" size="icon" onClick={() => navigate("/trainers/invite")} title="Convidar treinador">
-                <UserPlus className="w-5 h-5 text-primary" />
+                <UserPlus className="w-5 h-5 text-accent" />
               </Button>
             )}
-            <Avatar className="w-8 h-8 border border-border ml-1">
+            <Avatar className="w-8 h-8 border border-white/10 ml-1">
               <AvatarFallback className="bg-secondary">
-                <User className="w-4 h-4 text-muted-foreground" />
+                <User className="w-4 h-4 text-white/50" />
               </AvatarFallback>
             </Avatar>
             <Button variant="ghost" size="icon" onClick={signOut}>
-              <LogOut className="w-5 h-5 text-muted-foreground" />
+              <LogOut className="w-5 h-5 text-white/50" />
             </Button>
           </div>
         </div>
@@ -284,7 +284,7 @@ const Dashboard = () => {
                 {search ? "Nenhum aluno encontrado" : "Nenhum aluno cadastrado"}
               </p>
               {!search && (
-                <Button onClick={() => navigate("/students/new")} className="gradient-primary text-primary-foreground">
+                <Button onClick={() => navigate("/students/new")} className="gradient-neon text-white">
                   <Plus className="w-4 h-4 mr-2" /> Adicionar primeiro aluno
                 </Button>
               )}
@@ -306,7 +306,7 @@ const Dashboard = () => {
       {students.length > 0 && (
         <button
           onClick={() => navigate("/students/new")}
-          className="fixed bottom-6 right-6 w-14 h-14 rounded-full gradient-primary glow-primary flex items-center justify-center shadow-lg"
+          className="fixed bottom-6 right-6 w-14 h-14 rounded-full gradient-neon glow-accent flex items-center justify-center shadow-lg transition-transform active:scale-95"
         >
           <Plus className="w-6 h-6 text-primary-foreground" />
         </button>

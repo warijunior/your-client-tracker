@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -200,23 +200,23 @@ const StudentProfile = () => {
 
 
   return (
-    <div className="min-h-screen bg-background pb-8">
+    <div className="min-h-screen bg-black pb-8 theme-neon">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border p-4">
+      <header className="sticky top-0 z-10 bg-black/80 backdrop-blur-xl border-b border-white/5 p-4">
         <div className="flex items-center justify-between max-w-lg mx-auto">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-5 h-5 text-white" />
             </Button>
-            <h1 className="text-lg font-bold text-foreground truncate">👤 Perfil do Aluno</h1>
+            <h1 className="text-lg font-bold text-white truncate">👤 Perfil do Aluno</h1>
           </div>
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" onClick={() => navigate(`/students/${id}/workouts`)} title="Treinos">
-              <Dumbbell className="w-5 h-5 text-primary" />
+              <Dumbbell className="w-5 h-5 text-accent" />
             </Button>
             {student.user_id && (
               <Button variant="ghost" size="icon" onClick={() => setShowChat(true)}>
-                <MessageCircle className="w-5 h-5 text-primary" />
+                <MessageCircle className="w-5 h-5 text-accent" />
               </Button>
             )}
           </div>
@@ -410,7 +410,7 @@ const StudentProfile = () => {
 
 
           <TabsContent value="assessments" className="mt-4 space-y-3">
-            <Button onClick={() => { setEditingAssessment(null); setShowAssessmentForm(true); }} className="w-full gradient-primary text-primary-foreground">
+            <Button onClick={() => { setEditingAssessment(null); setShowAssessmentForm(true); }} className="w-full gradient-neon text-white">
               <Plus className="w-4 h-4 mr-2" /> Nova avaliação
             </Button>
             {assessments.length === 0 ? (
@@ -420,7 +420,7 @@ const StudentProfile = () => {
                 <div key={a.id} className="glass-card p-4 space-y-2 cursor-pointer hover:bg-secondary/50 transition-colors group relative" onClick={() => { setEditingAssessment(a); setShowAssessmentForm(true); }}>
                   <div className="flex items-center justify-between mb-1">
                     <p className="text-xs text-muted-foreground">{new Date(`${a.assessed_at}T12:00:00`).toLocaleDateString("pt-BR")}</p>
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${a.evaluation_type === 'simplified' ? 'bg-blue-500/10 text-blue-500' : 'bg-primary/10 text-primary'}`}>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${a.evaluation_type === 'simplified' ? 'bg-accent/10 text-accent' : 'bg-primary/10 text-primary'}`}>
                       {a.evaluation_type === 'simplified' ? '⚡ SIMPLIFICADA' : '📊 COMPLETA'}
                     </span>
                   </div>
@@ -445,10 +445,10 @@ const StudentProfile = () => {
 
           <TabsContent value="protocols" className="mt-4 space-y-3">
             <div className="flex gap-2">
-              <Button onClick={() => { setProtocolType("training"); setShowProtocolForm(true); }} className="flex-1 gradient-primary text-primary-foreground">
+              <Button onClick={() => { setProtocolType("training"); setShowProtocolForm(true); }} className="flex-1 gradient-primary text-white">
                 <Plus className="w-4 h-4 mr-1" /> Treino
               </Button>
-              <Button onClick={() => { setProtocolType("diet"); setShowProtocolForm(true); }} variant="outline" className="flex-1 border-primary text-primary">
+              <Button onClick={() => { setProtocolType("diet"); setShowProtocolForm(true); }} variant="outline" className="flex-1 border-accent text-accent">
                 <Plus className="w-4 h-4 mr-1" /> Dieta
               </Button>
             </div>
@@ -486,7 +486,7 @@ const StudentProfile = () => {
 
           {/* Schedule Tab */}
           <TabsContent value="schedule" className="mt-4 space-y-3">
-            <Button onClick={() => setShowAppointmentForm(true)} className="w-full gradient-primary text-primary-foreground">
+            <Button onClick={() => setShowAppointmentForm(true)} className="w-full gradient-neon text-white">
               <Plus className="w-4 h-4 mr-2" /> Novo agendamento
             </Button>
             {appointments.length === 0 ? (
