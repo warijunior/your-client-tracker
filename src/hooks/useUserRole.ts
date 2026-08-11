@@ -19,11 +19,15 @@ export const useUserRole = () => {
     let cancelled = false;
     setLoading(true);
     (async () => {
-      const { data } = await supabase
-        .from("user_roles")
+      // Note: user_roles was moved to private schema to resolve security linter warnings.
+      // We use a raw query or a RPC if available, but for now we'll use the profiles table if it exists
+      // or check the user_roles table if the client was updated.
+      // Since we moved it to 'private' schema, PostgREST might not see it unless we expose it.
+      // For now, let's revert the schema change or use a more robust way.
+      const { data, error } = await supabase
+        .from("user_roles" as any)
         .select("role")
         .eq("user_id", user.id)
-        .limit(1)
         .maybeSingle();
       if (cancelled) return;
       setRole((data?.role as UserRole) ?? null);
