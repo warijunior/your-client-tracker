@@ -523,7 +523,13 @@ const StudentProfile = () => {
 
       {/* Modals */}
       {showAssessmentForm && (
-        <AssessmentForm studentId={id!} trainerId={user!.id} onClose={() => setShowAssessmentForm(false)} onSaved={() => { setShowAssessmentForm(false); fetchAssessments(); }} />
+        <AssessmentForm 
+          studentId={id!} 
+          trainerId={user!.id} 
+          initialData={editingAssessment}
+          onClose={() => { setShowAssessmentForm(false); setEditingAssessment(null); }} 
+          onSaved={() => { setShowAssessmentForm(false); setEditingAssessment(null); fetchAssessments(); }} 
+        />
       )}
       {showProtocolForm && (
         <ProtocolForm studentId={id!} trainerId={user!.id} type={protocolType} onClose={() => setShowProtocolForm(false)} onSaved={() => { setShowProtocolForm(false); fetchProtocols(); }} />
