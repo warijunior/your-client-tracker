@@ -12,14 +12,23 @@ interface Props {
   trainerId: string;
   onClose: () => void;
   onSaved: () => void;
+  initialData?: any; // To support editing
 }
 
-const AssessmentForm = ({ studentId, trainerId, onClose, onSaved }: Props) => {
+const AssessmentForm = ({ studentId, trainerId, onClose, onSaved, initialData }: Props) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
-    weight: "", body_fat: "", chest: "", waist: "",
-    hips: "", arm: "", thigh: "", notes: "", assessed_at: new Date().toISOString().split("T")[0],
+    weight: initialData?.weight?.toString() || "", 
+    body_fat: initialData?.body_fat?.toString() || "", 
+    chest: initialData?.chest?.toString() || "", 
+    waist: initialData?.waist?.toString() || "",
+    hips: initialData?.hips?.toString() || "", 
+    arm: initialData?.arm?.toString() || "", 
+    thigh: initialData?.thigh?.toString() || "", 
+    notes: initialData?.notes || "", 
+    assessed_at: initialData?.assessed_at || new Date().toISOString().split("T")[0],
+    evaluation_type: initialData?.evaluation_type || "complete" as "complete" | "simplified",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
