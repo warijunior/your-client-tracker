@@ -76,6 +76,7 @@ const StudentProfile = () => {
   const [protocols, setProtocols] = useState<Protocol[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [showAssessmentForm, setShowAssessmentForm] = useState(false);
+  const [editingAssessment, setEditingAssessment] = useState<Assessment | null>(null);
   const [showProtocolForm, setShowProtocolForm] = useState(false);
   const [showAppointmentForm, setShowAppointmentForm] = useState(false);
   const [showChat, setShowChat] = useState(false);
