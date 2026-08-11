@@ -129,14 +129,18 @@ const AssessmentForm = ({ studentId, trainerId, onClose, onSaved, initialData }:
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 transition-all duration-300">
             {numField("Peso (kg)", "weight", "75.0")}
-            {numField("% Gordura", "body_fat", "15.0")}
-            {numField("Peito (cm)", "chest", "100")}
-            {numField("Cintura (cm)", "waist", "80")}
-            {numField("Quadril (cm)", "hips", "95")}
-            {numField("Braço (cm)", "arm", "35")}
-            {numField("Coxa (cm)", "thigh", "55")}
+            {form.evaluation_type === "complete" && (
+              <>
+                {numField("% Gordura", "body_fat", "15.0")}
+                {numField("Peito (cm)", "chest", "100")}
+                {numField("Cintura (cm)", "waist", "80")}
+                {numField("Quadril (cm)", "hips", "95")}
+                {numField("Braço (cm)", "arm", "35")}
+                {numField("Coxa (cm)", "thigh", "55")}
+              </>
+            )}
           </div>
 
           <div className="space-y-1">
