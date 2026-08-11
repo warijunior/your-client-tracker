@@ -200,23 +200,23 @@ const StudentProfile = () => {
 
 
   return (
-    <div className="min-h-screen bg-background pb-8">
+    <div className="min-h-screen bg-black pb-8 theme-neon">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border p-4">
+      <header className="sticky top-0 z-10 bg-black/80 backdrop-blur-xl border-b border-white/5 p-4">
         <div className="flex items-center justify-between max-w-lg mx-auto">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-5 h-5 text-white" />
             </Button>
-            <h1 className="text-lg font-bold text-foreground truncate">👤 Perfil do Aluno</h1>
+            <h1 className="text-lg font-bold text-white truncate">👤 Perfil do Aluno</h1>
           </div>
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" onClick={() => navigate(`/students/${id}/workouts`)} title="Treinos">
-              <Dumbbell className="w-5 h-5 text-primary" />
+              <Dumbbell className="w-5 h-5 text-accent" />
             </Button>
             {student.user_id && (
               <Button variant="ghost" size="icon" onClick={() => setShowChat(true)}>
-                <MessageCircle className="w-5 h-5 text-primary" />
+                <MessageCircle className="w-5 h-5 text-accent" />
               </Button>
             )}
           </div>
