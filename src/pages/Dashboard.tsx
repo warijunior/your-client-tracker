@@ -284,7 +284,7 @@ const Dashboard = () => {
                 {search ? "Nenhum aluno encontrado" : "Nenhum aluno cadastrado"}
               </p>
               {!search && (
-                <Button onClick={() => navigate("/students/new")} className="gradient-primary text-primary-foreground">
+                <Button onClick={() => navigate("/students/new")} className="gradient-neon text-white">
                   <Plus className="w-4 h-4 mr-2" /> Adicionar primeiro aluno
                 </Button>
               )}
@@ -306,7 +306,7 @@ const Dashboard = () => {
       {students.length > 0 && (
         <button
           onClick={() => navigate("/students/new")}
-          className="fixed bottom-6 right-6 w-14 h-14 rounded-full gradient-primary glow-primary flex items-center justify-center shadow-lg"
+          className="fixed bottom-6 right-6 w-14 h-14 rounded-full gradient-neon glow-accent flex items-center justify-center shadow-lg transition-transform active:scale-95"
         >
           <Plus className="w-6 h-6 text-primary-foreground" />
         </button>

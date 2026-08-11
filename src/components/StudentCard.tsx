@@ -39,7 +39,7 @@ const StudentCard = ({ student, onClick, onDelete }: StudentCardProps) => {
     <div className="flex items-center gap-2">
       <button
         onClick={onClick}
-        className="flex-1 glass-card p-4 flex items-center gap-4 hover:border-primary/30 transition-colors text-left min-w-0"
+        className="flex-1 glass-card p-4 flex items-center gap-4 hover:border-accent/50 transition-all text-left min-w-0"
       >
         <Avatar className="w-11 h-11 border border-border">
           <AvatarImage src={student.avatar_url || ""} alt={student.full_name} className="object-cover" />
@@ -54,7 +54,7 @@ const StudentCard = ({ student, onClick, onDelete }: StudentCardProps) => {
             {student.weight && <span>• {student.weight}kg</span>}
           </div>
           {student.goal && (
-            <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+            <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded-full bg-accent/10 text-accent">
               {goalLabels[student.goal] || student.goal}
             </span>
           )}
