@@ -81,20 +81,51 @@ const AssessmentForm = ({ studentId, trainerId, onClose, onSaved, initialData }:
     <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-end sm:items-center justify-center">
       <div className="w-full max-w-lg bg-card border border-border rounded-t-2xl sm:rounded-2xl p-5 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-foreground">Nova Avaliação</h2>
+          <h2 className="text-lg font-bold text-foreground">{initialData?.id ? "Editar Avaliação" : "Nova Avaliação"}</h2>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="w-5 h-5" />
           </Button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          <button
+            type="button"
+            onClick={() => setForm({ ...form, evaluation_type: "complete" })}
+            className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-1 text-center ${
+              form.evaluation_type === "complete"
+                ? "border-primary bg-primary/10"
+                : "border-border bg-secondary hover:border-primary/50"
+            }`}
+          >
+            <span className="text-lg">📊</span>
+            <span className="text-xs font-bold text-foreground">COMPLETA</span>
+            <span className="text-[10px] text-muted-foreground leading-tight">Peso + altura + medidas</span>
+          </button>
+          
+          <button
+            type="button"
+            onClick={() => setForm({ ...form, evaluation_type: "simplified" })}
+            className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-1 text-center ${
+              form.evaluation_type === "simplified"
+                ? "border-primary bg-primary/10"
+                : "border-border bg-secondary hover:border-primary/50"
+            }`}
+          >
+            <span className="text-lg">⚡</span>
+            <span className="text-xs font-bold text-foreground">SIMPLIFICADA</span>
+            <span className="text-[10px] text-muted-foreground leading-tight">Apenas peso + altura</span>
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">Data</Label>
+            <Label className="text-xs text-muted-foreground">Data da avaliação</Label>
             <Input
               type="date"
               value={form.assessed_at}
               onChange={(e) => setForm({ ...form, assessed_at: e.target.value })}
               className="bg-secondary border-border h-9 text-sm"
+              required
             />
           </div>
 
