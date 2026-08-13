@@ -35,18 +35,24 @@ export const MediaUpload = ({ exerciseId, onSuccess, currentMedia }: MediaUpload
     setUploading(true);
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `${exerciseId}-${Math.random()}.${fileExt}`;
+      const fileName = `${exerciseId}-${Date.now()}.${fileExt}`;
       const filePath = `exercises/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('exercise-media')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
         .from('exercise-media')
         .getPublicUrl(filePath);
+
+      // Cache busting
+      const cacheBustedUrl = `${publicUrl}?t=${Date.now()}`;
 
       // Determine which column to update based on extension
       let column = 'image_url';
@@ -55,7 +61,7 @@ export const MediaUpload = ({ exerciseId, onSuccess, currentMedia }: MediaUpload
 
       const { error: updateError } = await supabase
         .from('exercises')
-        .update({ [column]: publicUrl })
+        .update({ [column]: cacheBustedUrl })
         .eq('id', exerciseId);
 
       if (updateError) throw updateError;
