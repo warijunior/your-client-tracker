@@ -52,6 +52,7 @@ export const MediaUpload = ({ exerciseId, onSuccess, currentMedia }: MediaUpload
 
       // Cache busting
       const cacheBustedUrl = `${publicUrl}?t=${Date.now()}`;
+      console.log('Final URL for update:', cacheBustedUrl);
 
       // Determine which column to update based on extension
       let column = 'image_url';
