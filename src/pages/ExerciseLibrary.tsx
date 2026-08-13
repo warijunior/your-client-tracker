@@ -174,45 +174,9 @@ const ExerciseLibrary = () => {
               </div>
               
               <div className="pt-2 border-t border-border">
-                <div className="text-xs font-semibold text-muted-foreground mb-4 whitespace-pre-wrap border border-dashed border-primary/30 p-4 rounded-lg bg-primary/5">
-                  <h3 className="text-sm font-bold text-primary mb-2"># DEPURAÇÃO REAL — IMAGEM DO EXERCÍCIO SALVA, MAS A TELA CONTINUA MOSTRANDO A ANTIGA</h3>
-                  <p className="mb-2">## PROBLEMA ATUAL</p>
-                  <ul className="list-disc pl-4 space-y-1 mb-4">
-                    <li>O upload da nova imagem aparentemente é concluído com sucesso.</li>
-                    <li>A nova imagem é enviada e salva no Supabase Storage.</li>
-                    <li>Porém, depois de salvar, o sistema continua exibindo a imagem antiga do exercício.</li>
-                    <li>Mesmo atualizando a página, a imagem exibida não muda.</li>
-                    <li>Portanto, NÃO assumir que o problema é o upload.</li>
-                    <li>É necessário identificar exatamente onde a aplicação está buscando a imagem que aparece na tela.</li>
-                  </ul>
-
-                  <hr className="border-primary/20 my-4" />
-
-                  <p className="font-bold mb-2"># REGRA PRINCIPAL</p>
-                  <p className="mb-4">Não recriar a funcionalidade. Não criar outro sistema de upload. Não criar outra tabela. Não alterar funcionalidades existentes. Não modificar treinos, exercícios, GIFs ou vídeos. Primeiro investigar o fluxo real e corrigir somente o ponto que está incorreto.</p>
-
-                  <hr className="border-primary/20 my-4" />
-
-                  <p className="font-bold mb-2"># 1. IDENTIFICAR QUAL CAMPO A TELA USA</p>
-                  <p className="mb-2">Descobrir exatamente qual propriedade está sendo usada (gif_url, video_url, image_url, etc).</p>
-                  
-                  <p className="font-bold mb-2"># 2. VERIFICAR O UPDATE NO BANCO</p>
-                  <p className="mb-2">Confirmar que o update atinge o campo correto e o exercício correto.</p>
-
-                  <p className="font-bold mb-2"># 3. BUSCAR NOVAMENTE O EXERCÍCIO APÓS SALVAR</p>
-                  <p className="mb-2">Fluxo: Upload → Update → Select → Atualizar Estado.</p>
-
-                  <p className="font-bold mb-2"># 4. VERIFICAR CACHE</p>
-                  <p className="mb-2">Aplicar cache-busting se necessário (ex: image_url + ?v=timestamp).</p>
-
-                  <p className="font-bold mb-2"># 5. VERIFICAR PRIORIDADE DE MÍDIA</p>
-                  <p className="mb-2">Identificar se um GIF está sobrepondo a nova imagem na renderização.</p>
-
-                  <hr className="border-primary/20 my-4" />
-
-                  <p className="font-bold mb-2"># RESULTADO ESPERADO</p>
-                  <p>A imagem deve atualizar imediatamente e persistir após recarregar a página.</p>
-                </div>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold mb-3 px-1 opacity-60">
+                  Gerenciar Mídia do Exercício
+                </p>
                 <MediaUpload 
                   exerciseId={active.id} 
                   currentMedia={{ 
