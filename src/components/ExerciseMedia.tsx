@@ -17,8 +17,8 @@ export const ExerciseMedia = ({ src, videoUrl, imageUrl, alt = "", className }: 
   
   // Prioridade: GIF (src) > Vídeo > Foto (imageUrl)
   const mediaSrc = src || videoUrl || imageUrl;
-  const isVideo = !src && videoUrl;
-  const showMedia = mediaSrc && !failed;
+  const isVideo = !src && !!videoUrl;
+  const showMedia = !!mediaSrc && !failed;
 
   const handleLoad = () => setLoading(false);
   const handleError = () => {
@@ -35,6 +35,7 @@ export const ExerciseMedia = ({ src, videoUrl, imageUrl, alt = "", className }: 
       {showMedia ? (
         isVideo ? (
           <video
+            key={mediaSrc!}
             src={mediaSrc!}
             autoPlay
             loop
@@ -46,6 +47,7 @@ export const ExerciseMedia = ({ src, videoUrl, imageUrl, alt = "", className }: 
           />
         ) : (
           <img
+            key={mediaSrc!}
             src={mediaSrc!}
             alt={alt}
             loading="lazy"

@@ -102,11 +102,10 @@ const StudentProfile = () => {
     try {
       const fileExt = file.name.split(".").pop();
       const fileName = `${student.id}-${Date.now()}.${fileExt}`;
-      const filePath = `${user!.id}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(filePath, file, {
+        .upload(fileName, file, {
           cacheControl: '3600',
           upsert: false
         });
@@ -115,7 +114,7 @@ const StudentProfile = () => {
 
       const { data: { publicUrl } } = supabase.storage
         .from("avatars")
-        .getPublicUrl(filePath);
+        .getPublicUrl(fileName);
       
       const cacheBustedUrl = `${publicUrl}?t=${Date.now()}`;
 
