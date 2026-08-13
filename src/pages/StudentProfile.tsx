@@ -102,7 +102,6 @@ const StudentProfile = () => {
     try {
       const fileExt = file.name.split(".").pop();
       const fileName = `${student.id}-${Date.now()}.${fileExt}`;
-      const fileName = `${student.id}-${Date.now()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")
