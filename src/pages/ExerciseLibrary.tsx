@@ -183,8 +183,11 @@ const ExerciseLibrary = () => {
                     image_url: active.image_url 
                   }}
                   onSuccess={() => {
-                    fetchExercises();
-                    setActive(null);
+                    fetchExercises().then(() => {
+                      const updated = items.find(i => i.id === active.id);
+                      if (updated) setActive(updated);
+                      else setActive(null);
+                    });
                   }} 
                 />
               </div>

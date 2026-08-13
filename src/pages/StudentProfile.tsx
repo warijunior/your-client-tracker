@@ -101,22 +101,27 @@ const StudentProfile = () => {
 
     try {
       const fileExt = file.name.split(".").pop();
-      const fileName = `${student.id}-${Math.random()}.${fileExt}`;
+      const fileName = `${student.id}-${Date.now()}.${fileExt}`;
       const filePath = `${user!.id}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
         .from("avatars")
         .getPublicUrl(filePath);
+      
+      const cacheBustedUrl = `${publicUrl}?t=${Date.now()}`;
 
       const { error: updateError } = await supabase
         .from("students")
-        .update({ avatar_url: publicUrl })
+        .update({ avatar_url: cacheBustedUrl })
         .eq("id", student.id);
 
       if (updateError) throw updateError;
