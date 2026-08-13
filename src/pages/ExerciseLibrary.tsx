@@ -174,7 +174,7 @@ const ExerciseLibrary = () => {
               </div>
               
               <div className="pt-2 border-t border-border">
-                <p className="text-xs font-semibold text-muted-foreground mb-2">Gerenciar Mídia (Treinador)</p>
+                <p className="text-xs font-semibold text-muted-foreground mb-2">qual formato de imagem é indicado o treinador fazer upload quando for alterar na area de exercicio.</p>
                 <MediaUpload 
                   exerciseId={active.id} 
                   currentMedia={{ 
