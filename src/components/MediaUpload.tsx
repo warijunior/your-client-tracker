@@ -36,7 +36,6 @@ export const MediaUpload = ({ exerciseId, onSuccess, currentMedia }: MediaUpload
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${exerciseId}-${Date.now()}.${fileExt}`;
-      const filePath = `exercises/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('exercise-media')
