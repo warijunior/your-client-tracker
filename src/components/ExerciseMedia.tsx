@@ -35,6 +35,7 @@ export const ExerciseMedia = ({ src, videoUrl, imageUrl, alt = "", className }: 
       {showMedia ? (
         isVideo ? (
           <video
+            key={mediaSrc!}
             src={mediaSrc!}
             autoPlay
             loop
@@ -46,6 +47,7 @@ export const ExerciseMedia = ({ src, videoUrl, imageUrl, alt = "", className }: 
           />
         ) : (
           <img
+            key={mediaSrc!}
             src={mediaSrc!}
             alt={alt}
             loading="lazy"
