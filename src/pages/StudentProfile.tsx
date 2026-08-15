@@ -106,8 +106,8 @@ const StudentProfile = () => {
       const { error: uploadError } = await supabase.storage
         .from("avatars")
         .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: false
+          cacheControl: '0',
+          upsert: true
         });
 
       if (uploadError) throw uploadError;
@@ -125,7 +125,7 @@ const StudentProfile = () => {
 
       if (updateError) throw updateError;
 
-      setStudent({ ...student, avatar_url: publicUrl });
+      setStudent({ ...student, avatar_url: cacheBustedUrl });
       toast({ title: "Foto de perfil atualizada!" });
     } catch (error: any) {
       toast({
