@@ -96,12 +96,18 @@ const StudentDashboard = () => {
   const fetchData = async () => {
     const { data: studentData } = await supabase
       .from("students")
-      .select("id, full_name, goal, weight, trainer_id, avatar_url")
+      .select("id, full_name, goal, weight, trainer_id, avatar_url, updated_at")
       .eq("user_id", user!.id)
       .limit(1)
       .single();
 
     if (studentData) {
+      if (studentData.avatar_url && !studentData.avatar_url.startsWith('http')) {
+        const { data: { publicUrl } } = supabase.storage
+          .from("avatars")
+          .getPublicUrl(studentData.avatar_url);
+        studentData.avatar_url = `${publicUrl}?t=${new Date(studentData.updated_at || '').getTime()}`;
+      }
       setStudent(studentData);
       await Promise.all([
         fetchCheckins(studentData.id),
