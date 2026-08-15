@@ -71,6 +71,7 @@ const AssessmentForm = ({ studentId, trainerId, onClose, onSaved, initialData }:
       toast({ title: "Erro", description: error.message, variant: "destructive" });
     } else {
       toast({ title: initialData?.id ? "Avaliação atualizada! ✅" : "Avaliação salva! ✅" });
+      clearDraft();
       onSaved();
     }
     setLoading(false);

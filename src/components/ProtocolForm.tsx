@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useFormDraft } from "@/hooks/useFormDraft";
 
 interface Props {
   studentId: string;
@@ -18,8 +19,12 @@ interface Props {
 const ProtocolForm = ({ studentId, trainerId, type, onClose, onSaved }: Props) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  
+  const draftKey = `draft-protocol-${type}-${studentId}`;
+  const [form, setForm, clearDraft] = useFormDraft(draftKey, {
+    title: "",
+    content: ""
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
