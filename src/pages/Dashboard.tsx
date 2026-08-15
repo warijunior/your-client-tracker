@@ -113,7 +113,7 @@ const Dashboard = () => {
     if (!error && data) {
       const processedData = data.map(s => ({
         ...s,
-        avatar_url: s.avatar_url ? `${s.avatar_url}${s.avatar_url.includes('?') ? '&' : '?'}t=${new Date(s.updated_at || '').getTime()}` : s.avatar_url
+        avatar_url: s.avatar_url ? `${s.avatar_url.split('?t=')[0]}?t=${new Date(s.updated_at || '').getTime()}` : s.avatar_url
       }));
       setStudents(processedData);
     }
