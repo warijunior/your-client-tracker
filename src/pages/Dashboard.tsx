@@ -107,7 +107,7 @@ const Dashboard = () => {
   const fetchStudents = async () => {
     const { data, error } = await supabase
       .from("students")
-      .select("id, full_name, age, weight, height, goal, avatar_url")
+      .select("id, full_name, age, weight, height, goal, avatar_url, updated_at")
       .eq("status", "active")
       .order("created_at", { ascending: false });
     if (!error && data) setStudents(data);
