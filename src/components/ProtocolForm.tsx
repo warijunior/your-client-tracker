@@ -90,8 +90,8 @@ Jantar: 200g peixe + batata doce + legumes`;
           <div className="space-y-2">
             <Label className="text-muted-foreground">Conteúdo</Label>
             <Textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
+              value={form.content}
+              onChange={(e) => setForm({ ...form, content: e.target.value })}
               placeholder={placeholder}
               className="bg-secondary border-border min-h-[200px] text-sm"
               required
