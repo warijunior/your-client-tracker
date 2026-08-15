@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { useFormDraft } from "@/hooks/useFormDraft";
 import { FlaskConical, Loader2, Save } from "lucide-react";
 
 interface Props {
@@ -21,11 +22,14 @@ const ExamsPanel = ({ studentId, mode, userId }: Props) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [required, setRequired] = useState(false);
-  const [guidance, setGuidance] = useState("");
-  const [nextDate, setNextDate] = useState("");
-  const [periodicity, setPeriodicity] = useState("Semestral");
   const [exists, setExists] = useState(false);
+
+  const [form, setForm] = useFormDraft(`draft-exams-${studentId}`, {
+    required: false,
+    guidance: "",
+    nextDate: "",
+    periodicity: "Semestral"
+  });
 
   const load = useCallback(async () => {
     const { data } = await supabase.from("exam_followups").select("*").eq("student_id", studentId).maybeSingle();

@@ -77,12 +77,12 @@ const HydrationPanel = ({ studentId, mode, userId }: Props) => {
   const percent = goalMl > 0 ? Math.min(Math.round((consumedToday / goalMl) * 100), 100) : 0;
 
   const saveGoal = async () => {
-    const raw = parseFloat(goalInput.replace(",", "."));
+    const raw = parseFloat(form.goalInput.replace(",", "."));
     if (!raw || raw <= 0) {
       toast({ title: "Informe uma meta válida", variant: "destructive" });
       return;
     }
-    const ml = Math.round(goalUnit === "L" ? raw * 1000 : raw);
+    const ml = Math.round(form.goalUnit === "L" ? raw * 1000 : raw);
     setSaving(true);
     const { error } = await supabase
       .from("hydration_goals")
@@ -93,8 +93,7 @@ const HydrationPanel = ({ studentId, mode, userId }: Props) => {
       return;
     }
     setGoalMl(ml);
-    setGoalInput(String(ml));
-    setGoalUnit("ml");
+    setForm({ ...form, goalInput: String(ml), goalUnit: "ml" });
     setHasGoal(true);
     toast({ title: "Meta diária salva 💧" });
   };
@@ -185,9 +184,9 @@ const HydrationPanel = ({ studentId, mode, userId }: Props) => {
               <Input
                 type="number"
                 step="0.1"
-                value={goalInput}
-                onChange={(e) => setGoalInput(e.target.value)}
-                placeholder={goalUnit === "ml" ? "Ex: 3000" : "Ex: 3"}
+                value={form.goalInput}
+                onChange={(e) => setForm({ ...form, goalInput: e.target.value })}
+                placeholder={form.goalUnit === "ml" ? "Ex: 3000" : "Ex: 3"}
                 className="bg-secondary border-border"
               />
             </div>
@@ -198,8 +197,8 @@ const HydrationPanel = ({ studentId, mode, userId }: Props) => {
                   <button
                     key={u}
                     type="button"
-                    onClick={() => setGoalUnit(u)}
-                    className={`flex-1 text-xs py-2 transition-colors ${goalUnit === u ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}
+                    onClick={() => setForm({ ...form, goalUnit: u })}
+                    className={`flex-1 text-xs py-2 transition-colors ${form.goalUnit === u ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}
                   >
                     {u}
                   </button>
@@ -236,17 +235,17 @@ const HydrationPanel = ({ studentId, mode, userId }: Props) => {
               <Label className="text-xs text-muted-foreground">Outra quantidade (ml)</Label>
               <Input
                 type="number"
-                value={manual}
-                onChange={(e) => setManual(e.target.value)}
+                value={form.manual}
+                onChange={(e) => setForm({ ...form, manual: e.target.value })}
                 placeholder="Ex: 350"
                 className="bg-secondary border-border"
               />
             </div>
             <Button
-              disabled={saving || !manual}
+              disabled={saving || !form.manual}
               onClick={async () => {
-                await addWater(parseInt(manual, 10));
-                setManual("");
+                await addWater(parseInt(form.manual, 10));
+                setForm({ ...form, manual: "" });
               }}
               className="gradient-primary text-primary-foreground h-10"
             >
