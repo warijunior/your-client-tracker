@@ -202,20 +202,14 @@ const StudentDashboard = () => {
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(filePath);
-      
-      const cacheBustedUrl = `${publicUrl}?t=${Date.now()}`;
-
       const { error: updateError } = await supabase
         .from("students")
-        .update({ avatar_url: cacheBustedUrl })
+        .update({ avatar_url: filePath })
         .eq("id", student.id);
 
       if (updateError) throw updateError;
 
-      setStudent({ ...student, avatar_url: cacheBustedUrl });
+      await fetchData();
       toast({ title: "Foto de perfil atualizada!" });
     } catch (error: any) {
       toast({
