@@ -123,7 +123,7 @@ const StudentDashboard = () => {
         setTodayCheckin(existing);
         setTrainingDone(existing.training_done);
         setWeight(existing.weight?.toString() || "");
-        setNotes(existing.notes || "");
+        setCheckinForm({ notes: existing.notes || "" });
       }
     }
   };
