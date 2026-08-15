@@ -21,7 +21,7 @@ interface Summary {
   week: { date: string; total: number }[];
   supplements: { id: string; name: string; dosage: number | null; unit: string; schedule: string | null }[];
   exam: { required: boolean; guidance: string | null; next_date: string | null; periodicity: string | null } | null;
-  cardio: { date: string; total: number }[];
+  cardio: { date: string; total: number; prescribed: number }[];
 }
 
 const FollowUpPanel = ({ studentId }: Props) => {
