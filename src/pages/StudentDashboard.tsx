@@ -163,6 +163,7 @@ const StudentDashboard = () => {
         toast({ title: "Erro ao atualizar", description: error.message, variant: "destructive" });
       } else {
         toast({ title: "Check-in atualizado! ✅" });
+        clearCheckinDraft();
         fetchCheckins(student.id);
       }
     } else {
@@ -171,6 +172,7 @@ const StudentDashboard = () => {
         toast({ title: "Erro ao registrar", description: error.message, variant: "destructive" });
       } else {
         toast({ title: "Check-in registrado! 💪" });
+        clearCheckinDraft();
         fetchCheckins(student.id);
       }
     }
