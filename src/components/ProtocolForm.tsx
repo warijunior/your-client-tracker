@@ -79,8 +79,8 @@ Jantar: 200g peixe + batata doce + legumes`;
           <div className="space-y-2">
             <Label className="text-muted-foreground">Título</Label>
             <Input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
               placeholder={type === "training" ? "Ex: Treino A - Peito e Tríceps" : "Ex: Dieta Cutting 2000kcal"}
               className="bg-secondary border-border"
               required
