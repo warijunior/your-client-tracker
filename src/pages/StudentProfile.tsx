@@ -138,7 +138,12 @@ const StudentProfile = () => {
 
   const fetchAssessments = async () => {
     const { data } = await supabase.from("assessments").select("*").eq("student_id", id!).order("assessed_at", { ascending: true });
-    if (data) setAssessments(data);
+    if (data) {
+      setAssessments(data.map(a => ({
+        ...a,
+        evaluation_type: a.evaluation_type as "complete" | "simplified" | undefined
+      })));
+    }
   };
 
   const fetchProtocols = async () => {

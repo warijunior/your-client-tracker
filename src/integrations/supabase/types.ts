@@ -71,6 +71,7 @@ export type Database = {
           body_fat: number | null
           chest: number | null
           created_at: string
+          evaluation_type: string | null
           hips: number | null
           id: string
           notes: string | null
@@ -86,6 +87,7 @@ export type Database = {
           body_fat?: number | null
           chest?: number | null
           created_at?: string
+          evaluation_type?: string | null
           hips?: number | null
           id?: string
           notes?: string | null
@@ -101,6 +103,7 @@ export type Database = {
           body_fat?: number | null
           chest?: number | null
           created_at?: string
+          evaluation_type?: string | null
           hips?: number | null
           id?: string
           notes?: string | null
