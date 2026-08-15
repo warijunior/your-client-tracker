@@ -80,7 +80,9 @@ const StudentDashboard = () => {
   // Check-in form
   const [trainingDone, setTrainingDone] = useState(false);
   const [weight, setWeight] = useState("");
-  const [notes, setNotes] = useState("");
+  const [checkinForm, setCheckinForm, clearCheckinDraft] = useFormDraft(`draft-checkin-${user?.id}`, {
+    notes: ""
+  });
   const [todayCheckin, setTodayCheckin] = useState<Checkin | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
