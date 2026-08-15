@@ -434,7 +434,7 @@ const StudentDashboard = () => {
               </div>
               <div className="space-y-2">
                 <Label className="text-sm text-muted-foreground">Notas do dia</Label>
-                <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Como foi o treino? Disposição, dores..." className="bg-secondary border-border min-h-[80px]" />
+                <Textarea value={checkinForm.notes} onChange={(e) => setCheckinForm({ ...checkinForm, notes: e.target.value })} placeholder="Como foi o treino? Disposição, dores..." className="bg-secondary border-border min-h-[80px]" />
               </div>
               <Button onClick={handleCheckin} disabled={submitting} className="w-full gradient-neon text-white font-semibold h-12 glow-accent">
                 {submitting ? "Salvando..." : todayCheckin ? "Atualizar check-in" : "Registrar check-in"}
