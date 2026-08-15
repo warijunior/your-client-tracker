@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { X, Upload } from "lucide-react";
+import { X, Upload, Camera, Image as ImageIcon } from "lucide-react";
 
 interface Props {
   studentId: string;
@@ -25,6 +25,9 @@ const PhotoUpload = ({ studentId, onClose, onSaved }: Props) => {
   const [notes, setNotes] = useState("");
   const [takenAt, setTakenAt] = useState(new Date().toISOString().split("T")[0]);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (f) {
@@ -33,6 +36,14 @@ const PhotoUpload = ({ studentId, onClose, onSaved }: Props) => {
       reader.onloadend = () => setPreview(reader.result as string);
       reader.readAsDataURL(f);
     }
+  };
+
+  const openGallery = () => {
+    fileInputRef.current?.click();
+  };
+
+  const openCamera = () => {
+    cameraInputRef.current?.click();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -80,21 +91,56 @@ const PhotoUpload = ({ studentId, onClose, onSaved }: Props) => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* File input */}
+          {/* File selection options */}
           <div className="space-y-2">
             {preview ? (
               <div className="relative">
-                <img src={preview} alt="Preview" className="w-full h-48 object-cover rounded-lg" />
-                <Button variant="ghost" size="icon" className="absolute top-2 right-2 bg-background/50" onClick={() => { setFile(null); setPreview(null); }}>
+                <img src={preview} alt="Preview" className="w-full h-64 object-cover rounded-lg" />
+                <Button 
+                  type="button"
+                  variant="ghost" 
+                  size="icon" 
+                  className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white rounded-full" 
+                  onClick={() => { setFile(null); setPreview(null); }}
+                >
                   <X className="w-4 h-4" />
                 </Button>
               </div>
             ) : (
-              <label className="flex flex-col items-center justify-center w-full h-32 rounded-lg border-2 border-dashed border-border hover:border-primary/50 transition-colors cursor-pointer bg-secondary">
-                <Upload className="w-8 h-8 text-muted-foreground mb-2" />
-                <span className="text-sm text-muted-foreground">Clique para selecionar foto</span>
-                <input type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileChange} />
-              </label>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={openCamera}
+                  className="flex flex-col items-center justify-center p-6 rounded-xl border-2 border-dashed border-border hover:border-primary/50 transition-all cursor-pointer bg-secondary group active:scale-95"
+                >
+                  <Camera className="w-8 h-8 text-primary mb-2 group-hover:scale-110 transition-transform" />
+                  <span className="text-sm font-medium text-foreground">Tirar foto</span>
+                  <input 
+                    ref={cameraInputRef}
+                    type="file" 
+                    accept="image/*" 
+                    capture="environment" 
+                    className="hidden" 
+                    onChange={handleFileChange} 
+                  />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={openGallery}
+                  className="flex flex-col items-center justify-center p-6 rounded-xl border-2 border-dashed border-border hover:border-primary/50 transition-all cursor-pointer bg-secondary group active:scale-95"
+                >
+                  <ImageIcon className="w-8 h-8 text-cyan-400 mb-2 group-hover:scale-110 transition-transform" />
+                  <span className="text-sm font-medium text-foreground">Galeria</span>
+                  <input 
+                    ref={fileInputRef}
+                    type="file" 
+                    accept="image/*" 
+                    className="hidden" 
+                    onChange={handleFileChange} 
+                  />
+                </button>
+              </div>
             )}
           </div>
 
