@@ -34,14 +34,15 @@ const ProtocolForm = ({ studentId, trainerId, type, onClose, onSaved }: Props) =
       student_id: studentId,
       trainer_id: trainerId,
       type,
-      title,
-      content,
+      title: form.title,
+      content: form.content,
     });
 
     if (error) {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
     } else {
       toast({ title: `${type === "training" ? "Treino" : "Dieta"} salvo! ✅` });
+      clearDraft();
       onSaved();
     }
     setLoading(false);
