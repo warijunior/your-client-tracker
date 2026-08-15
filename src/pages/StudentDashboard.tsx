@@ -154,11 +154,11 @@ const StudentDashboard = () => {
       check_date: new Date().toISOString().split("T")[0],
       training_done: trainingDone,
       weight: weight ? parseFloat(weight) : null,
-      notes: notes || null,
+      notes: checkinForm.notes || null,
     };
 
     if (todayCheckin) {
-      const { error } = await supabase.from("checkins").update({ training_done: trainingDone, weight: weight ? parseFloat(weight) : null, notes: notes || null }).eq("id", todayCheckin.id);
+      const { error } = await supabase.from("checkins").update({ training_done: trainingDone, weight: weight ? parseFloat(weight) : null, notes: checkinForm.notes || null }).eq("id", todayCheckin.id);
       if (error) {
         toast({ title: "Erro ao atualizar", description: error.message, variant: "destructive" });
       } else {
