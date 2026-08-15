@@ -107,10 +107,16 @@ const Dashboard = () => {
   const fetchStudents = async () => {
     const { data, error } = await supabase
       .from("students")
-      .select("id, full_name, age, weight, height, goal, avatar_url")
+      .select("id, full_name, age, weight, height, goal, avatar_url, updated_at")
       .eq("status", "active")
       .order("created_at", { ascending: false });
-    if (!error && data) setStudents(data);
+    if (!error && data) {
+      const processedData = data.map(s => ({
+        ...s,
+        avatar_url: s.avatar_url ? `${s.avatar_url.split('?t=')[0]}?t=${new Date(s.updated_at || '').getTime()}` : s.avatar_url
+      }));
+      setStudents(processedData);
+    }
     setLoading(false);
   };
 

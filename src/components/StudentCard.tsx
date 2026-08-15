@@ -42,7 +42,7 @@ const StudentCard = ({ student, onClick, onDelete }: StudentCardProps) => {
         className="flex-1 glass-card p-4 flex items-center gap-4 hover:border-accent/50 transition-all text-left min-w-0"
       >
         <Avatar className="w-11 h-11 border border-border">
-          <AvatarImage src={student.avatar_url || ""} alt={student.full_name} className="object-cover" />
+          <AvatarImage src={student.avatar_url || ""} alt={student.full_name} className="object-cover" key={student.avatar_url} />
           <AvatarFallback className="bg-secondary">
             <User className="w-5 h-5 text-muted-foreground" />
           </AvatarFallback>
