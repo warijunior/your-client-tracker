@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { useFormDraft } from "@/hooks/useFormDraft";
 import { Droplets, Loader2, Save, Target } from "lucide-react";
 
 interface Props {
@@ -33,11 +34,14 @@ const HydrationPanel = ({ studentId, mode, userId }: Props) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [goalMl, setGoalMl] = useState<number>(3000);
-  const [goalInput, setGoalInput] = useState("3000");
-  const [goalUnit, setGoalUnit] = useState<"ml" | "L">("ml");
   const [hasGoal, setHasGoal] = useState(false);
   const [logs, setLogs] = useState<WaterLog[]>([]);
-  const [manual, setManual] = useState("");
+
+  const [form, setForm] = useFormDraft(`draft-hydration-${studentId}`, {
+    goalInput: "3000",
+    goalUnit: "ml" as "ml" | "L",
+    manual: ""
+  });
 
   const load = useCallback(async () => {
     const [goalRes, logsRes] = await Promise.all([
@@ -51,7 +55,7 @@ const HydrationPanel = ({ studentId, mode, userId }: Props) => {
     ]);
     if (goalRes.data) {
       setGoalMl(goalRes.data.daily_goal_ml);
-      setGoalInput(String(goalRes.data.daily_goal_ml));
+      setForm({ ...form, goalInput: String(goalRes.data.daily_goal_ml) });
       setHasGoal(true);
     }
     setLogs(logsRes.data ?? []);
