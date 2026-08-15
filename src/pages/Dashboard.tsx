@@ -111,10 +111,19 @@ const Dashboard = () => {
       .eq("status", "active")
       .order("created_at", { ascending: false });
     if (!error && data) {
-      const processedData = data.map(s => ({
-        ...s,
-        avatar_url: s.avatar_url ? `${s.avatar_url.split('?t=')[0]}?t=${new Date(s.updated_at || '').getTime()}` : s.avatar_url
-      }));
+      const processedData = data.map(s => {
+        let avatarUrl = s.avatar_url;
+        if (avatarUrl && !avatarUrl.startsWith('http')) {
+          const { data: { publicUrl } } = supabase.storage
+            .from("avatars")
+            .getPublicUrl(avatarUrl);
+          avatarUrl = `${publicUrl}?t=${new Date(s.updated_at || '').getTime()}`;
+        }
+        return {
+          ...s,
+          avatar_url: avatarUrl
+        };
+      });
       setStudents(processedData);
     }
     setLoading(false);

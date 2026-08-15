@@ -93,6 +93,15 @@ const StudentProfile = () => {
 
   const fetchStudent = async () => {
     const { data } = await supabase.from("students").select("*").eq("id", id!).single();
+    if (data && data.avatar_url) {
+      // If it's a relative path, construct the public URL with cache busting
+      if (!data.avatar_url.startsWith('http')) {
+        const { data: { publicUrl } } = supabase.storage
+          .from("avatars")
+          .getPublicUrl(data.avatar_url);
+        data.avatar_url = `${publicUrl}?t=${new Date(data.updated_at || '').getTime()}`;
+      }
+    }
     if (data) setStudent(data);
   };
 
@@ -112,20 +121,16 @@ const StudentProfile = () => {
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(fileName);
-      
-      const cacheBustedUrl = `${publicUrl}?t=${Date.now()}`;
-
+      // Store only the relative path/filename in the database
       const { error: updateError } = await supabase
         .from("students")
-        .update({ avatar_url: cacheBustedUrl })
+        .update({ avatar_url: fileName })
         .eq("id", student.id);
 
       if (updateError) throw updateError;
 
-      setStudent({ ...student, avatar_url: cacheBustedUrl });
+      // Re-fetch to get the correctly formatted URL
+      await fetchStudent();
       toast({ title: "Foto de perfil atualizada!" });
     } catch (error: any) {
       toast({
