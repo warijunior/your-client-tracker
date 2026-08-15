@@ -1,71 +1,38 @@
-## Objetivo
-Adicionar uma biblioteca completa de exercícios visível **somente para o TREINADOR**, com montagem de treinos para alunos e registro de progressão de carga pelo aluno. Nenhuma tela, fluxo, RLS ou tabela existente será alterada — apenas novas adições.
+# Plano: Preservação de Estado em Navegação Interna
 
-## Escopo (apenas adições)
+Impedir a perda de dados preenchidos em formulários (Avaliações, Protocolos, Cadastro de Aluno, etc.) quando o usuário navega entre abas ou seções da aplicação sem salvar, mantendo os dados disponíveis até que o componente seja remontado ou o formulário submetido.
 
-### 1. Banco de dados (novas tabelas, nada alterado)
+## Problema Identificado
+Componentes de formulário (`AssessmentForm`, `ProtocolForm`, `NewStudent`) utilizam estados locais (`useState`) que são destruídos quando o componente é desmontado (ex: trocar de aba no `StudentProfile` ou navegar para outra página).
 
-```text
-exercises               (catálogo global, leitura para staff)
-  id, name, muscle_group, secondary_muscles[], category,
-  equipment, difficulty, is_unilateral, description,
-  gif_url, source, created_at
+## Solução Técnica
 
-workouts                (treino criado pelo treinador para um aluno)
-  id, student_id (FK students), trainer_id, title, notes,
-  active, created_at, updated_at
+### 1. Sistema de Cache em Memória (Session Storage)
+Utilizar `sessionStorage` para persistir temporariamente os rascunhos de formulários.
+- **Por que Session Storage?** Dados persistem durante a sessão da aba, não ocupam o banco de dados e são limpos se a aba for fechada, mas sobrevivem a recarregamentos e navegação interna.
 
-workout_exercises       (exercícios dentro de um treino, ordenados)
-  id, workout_id, exercise_id, order_index,
-  sets, reps, rest_seconds, suggested_load, notes
+### 2. Hook Customizado `useFormDraft`
+Criar um hook que gerencia o estado do formulário e sincroniza com o cache.
+- `key`: Identificador único (ex: `draft-assessment-${studentId}`).
+- `initialValues`: Valores padrão.
+- `clearOnSubmit`: Limpar cache após sucesso.
 
-exercise_logs           (carga registrada pelo aluno por execução)
-  id, workout_exercise_id, student_id, user_id,
-  load, reps_done, notes, performed_at
-```
+### 3. Implementação nos Componentes Críticos
+1.  **AssessmentForm.tsx**: Persistir medidas e notas durante a edição.
+2.  **ProtocolForm.tsx**: Persistir título e conteúdo de treinos/dietas.
+3.  **NewStudent.tsx**: Persistir dados cadastrais do novo aluno.
+4.  **StudentDashboard.tsx**: Persistir o campo de notas do check-in diário.
+5.  **HydrationPanel / SupplementsPanel / ExamsPanel**: Persistir inputs de texto/número em progresso.
 
-**RLS (novas políticas, não toca nas existentes):**
-- `exercises`: SELECT permitido a admin/trainer (via `has_role`). Aluno **não** lê.
-- `workouts` / `workout_exercises`: staff gerencia (admin + trainer); aluno SELECT apenas onde `student_id` corresponde ao seu registro de `students.user_id`.
-- `exercise_logs`: aluno insere/lê os próprios; trainer/admin leem os logs dos alunos.
+## Detalhes Técnicos
+- Não altera RLS ou Banco de Dados.
+- Não altera lógica de salvamento final.
+- Garante que ao voltar para a aba "Avaliações", os dados digitados no modal (mesmo que tenha sido fechado pela navegação) reapareçam.
+- Implementação de "Debounce" leve para evitar excesso de escritas no storage.
 
-### 2. Seed inicial de exercícios
-Migration insere ~30–50 exercícios base (peito, costas, perna, ombro, braço, core), cada um com `gif_url` apontando para a CDN pública **wger** (`https://wger.de/...`) ou imagens placeholder neutras. Estrutura suporta importar milhares depois.
-
-### 3. Novas telas / rotas (treinador)
-- `/exercises` — Biblioteca: busca por nome, filtros (grupo muscular, equipamento, dificuldade, unilateral). Card com gif, descrição, músculos.
-- `/students/:id/workouts` — Lista de treinos do aluno + botão "Novo treino".
-- `/students/:id/workouts/:workoutId` — Editor de treino: adicionar exercícios da biblioteca, definir séries / reps / descanso / carga sugerida / observações, reordenar e remover.
-
-Acesso protegido por `ProtectedRoute` + checagem `isStaff` (já existente).
-
-### 4. Nova tela (aluno)
-- `/my-workouts` (no `StudentDashboard`) — Lista de treinos ativos. Ao abrir um treino, mostra cada exercício com:
-  - Nome, GIF, séries, reps, descanso, observações
-  - Campo "Registrar carga" (load + reps feitas + notas) → grava em `exercise_logs`
-  - Última carga usada + melhor carga + mini-histórico cronológico
-
-### 5. Componentes novos
-- `ExerciseCard`, `ExerciseLibrary`, `ExerciseFilters`
-- `WorkoutBuilder`, `WorkoutExerciseRow`
-- `StudentWorkoutView`, `LoadProgressionWidget`
-
-### 6. Performance / UX
-- Paginação/virtualização leve na biblioteca (limit + busca server-side via `ilike`).
-- GIFs com `loading="lazy"`.
-- Layout mobile-first seguindo o tema dark+verde existente.
-
-## O que **não** será mexido
-- Tabelas existentes (`students`, `protocols`, `assessments`, `payments`, `appointments`, `checkins`, `messages`, `notifications`, `progress_photos`, `profiles`, `user_roles`, `trainer_invites`).
-- Trigger `handle_new_user`, função `has_role`, fluxo de convites de treinador, autenticação, roteamento por papel.
-- Telas atuais: `Dashboard`, `StudentProfile`, `StudentDashboard`, `Auth`, `InviteTrainer`, `NewStudent` (apenas adicionarei links de navegação para as novas rotas — sem remover nada).
-
-## Ordem de execução
-1. Migration: criar 4 tabelas + GRANTs + RLS + seed inicial.
-2. Adicionar rotas em `App.tsx` e links no menu do treinador / aluno.
-3. Implementar biblioteca e filtros.
-4. Implementar editor de treino.
-5. Implementar visualização do aluno + registro de carga + histórico.
-6. Verificar build e fluxo nas duas contas.
-
-Confirma para eu seguir?
+## Ordem de Execução
+1. Criar `src/hooks/useFormDraft.ts`.
+2. Integrar no `AssessmentForm.tsx`.
+3. Integrar no `ProtocolForm.tsx`.
+4. Integrar no `NewStudent.tsx`.
+5. Verificar outros painéis no `StudentProfile` e `StudentDashboard`.
