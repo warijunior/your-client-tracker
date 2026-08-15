@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { useFormDraft } from "@/hooks/useFormDraft";
 import { FlaskConical, Loader2, Save } from "lucide-react";
 
 interface Props {
@@ -21,19 +22,24 @@ const ExamsPanel = ({ studentId, mode, userId }: Props) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [required, setRequired] = useState(false);
-  const [guidance, setGuidance] = useState("");
-  const [nextDate, setNextDate] = useState("");
-  const [periodicity, setPeriodicity] = useState("Semestral");
   const [exists, setExists] = useState(false);
+
+  const [form, setForm] = useFormDraft(`draft-exams-${studentId}`, {
+    required: false,
+    guidance: "",
+    nextDate: "",
+    periodicity: "Semestral"
+  });
 
   const load = useCallback(async () => {
     const { data } = await supabase.from("exam_followups").select("*").eq("student_id", studentId).maybeSingle();
     if (data) {
-      setRequired(data.required);
-      setGuidance(data.guidance ?? "");
-      setNextDate(data.next_date ?? "");
-      setPeriodicity(data.periodicity ?? "Semestral");
+      setForm({
+        required: data.required,
+        guidance: data.guidance ?? "",
+        nextDate: data.next_date ?? "",
+        periodicity: data.periodicity ?? "Semestral"
+      });
       setExists(true);
     }
     setLoading(false);
@@ -49,10 +55,10 @@ const ExamsPanel = ({ studentId, mode, userId }: Props) => {
       {
         student_id: studentId,
         trainer_id: userId,
-        required,
-        guidance: guidance || null,
-        next_date: nextDate || null,
-        periodicity: periodicity || null,
+        required: form.required,
+        guidance: form.guidance || null,
+        next_date: form.nextDate || null,
+        periodicity: form.periodicity || null,
       },
       { onConflict: "student_id" }
     );
@@ -80,21 +86,21 @@ const ExamsPanel = ({ studentId, mode, userId }: Props) => {
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Acompanhamento periódico</span>
-              <span className={required ? "text-primary font-medium" : "text-foreground"}>{required ? "Sim" : "Não"}</span>
+              <span className={form.required ? "text-primary font-medium" : "text-foreground"}>{form.required ? "Sim" : "Não"}</span>
             </div>
-            {periodicity && (
+            {form.periodicity && (
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Periodicidade</span>
-                <span className="text-foreground">{periodicity}</span>
+                <span className="text-foreground">{form.periodicity}</span>
               </div>
             )}
-            {nextDate && (
+            {form.nextDate && (
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Data prevista</span>
-                <span className="text-foreground">{new Date(`${nextDate}T12:00:00`).toLocaleDateString("pt-BR")}</span>
+                <span className="text-foreground">{new Date(`${form.nextDate}T12:00:00`).toLocaleDateString("pt-BR")}</span>
               </div>
             )}
-            {guidance && <p className="text-xs text-secondary-foreground whitespace-pre-wrap pt-1">{guidance}</p>}
+            {form.guidance && <p className="text-xs text-secondary-foreground whitespace-pre-wrap pt-1">{form.guidance}</p>}
           </div>
         )}
         <p className="text-[11px] text-muted-foreground border-t border-border pt-2">
@@ -113,23 +119,23 @@ const ExamsPanel = ({ studentId, mode, userId }: Props) => {
 
       <div className="flex items-center justify-between p-3 rounded-lg bg-secondary">
         <Label className="text-sm text-foreground">Necessidade de exames periódicos</Label>
-        <Switch checked={required} onCheckedChange={setRequired} />
+        <Switch checked={form.required} onCheckedChange={(v) => setForm({ ...form, required: v })} />
       </div>
 
-      {required && (
+      {form.required && (
         <div className="space-y-3">
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">Observação / orientação</Label>
             <Textarea
-              value={guidance}
-              onChange={(e) => setGuidance(e.target.value)}
+              value={form.guidance}
+              onChange={(e) => setForm({ ...form, guidance: e.target.value })}
               placeholder="Registre a orientação de acompanhamento"
               className="bg-secondary border-border min-h-[80px]"
             />
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">Data prevista para acompanhamento</Label>
-            <Input type="date" value={nextDate} onChange={(e) => setNextDate(e.target.value)} className="bg-secondary border-border" />
+            <Input type="date" value={form.nextDate} onChange={(e) => setForm({ ...form, nextDate: e.target.value })} className="bg-secondary border-border" />
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">Periodicidade</Label>
@@ -138,9 +144,9 @@ const ExamsPanel = ({ studentId, mode, userId }: Props) => {
                 <button
                   key={p}
                   type="button"
-                  onClick={() => setPeriodicity(p)}
+                  onClick={() => setForm({ ...form, periodicity: p })}
                   className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
-                    periodicity === p ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-muted-foreground border-border"
+                    form.periodicity === p ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-muted-foreground border-border"
                   }`}
                 >
                   {p}

@@ -12,6 +12,7 @@ import { Dumbbell, LogOut, CheckCircle2, Calendar, TrendingUp, ChevronLeft, Chev
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { XCLogo } from "@/components/XCLogo";
 import { useToast } from "@/hooks/use-toast";
+import { useFormDraft } from "@/hooks/useFormDraft";
 import NotificationBell from "@/components/NotificationBell";
 import ChatWindow from "@/components/ChatWindow";
 import PhotoGallery from "@/components/PhotoGallery";
@@ -79,7 +80,9 @@ const StudentDashboard = () => {
   // Check-in form
   const [trainingDone, setTrainingDone] = useState(false);
   const [weight, setWeight] = useState("");
-  const [notes, setNotes] = useState("");
+  const [checkinForm, setCheckinForm, clearCheckinDraft] = useFormDraft(`draft-checkin-${user?.id}`, {
+    notes: ""
+  });
   const [todayCheckin, setTodayCheckin] = useState<Checkin | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -120,7 +123,7 @@ const StudentDashboard = () => {
         setTodayCheckin(existing);
         setTrainingDone(existing.training_done);
         setWeight(existing.weight?.toString() || "");
-        setNotes(existing.notes || "");
+        setCheckinForm({ notes: existing.notes || "" });
       }
     }
   };
@@ -151,15 +154,16 @@ const StudentDashboard = () => {
       check_date: new Date().toISOString().split("T")[0],
       training_done: trainingDone,
       weight: weight ? parseFloat(weight) : null,
-      notes: notes || null,
+      notes: checkinForm.notes || null,
     };
 
     if (todayCheckin) {
-      const { error } = await supabase.from("checkins").update({ training_done: trainingDone, weight: weight ? parseFloat(weight) : null, notes: notes || null }).eq("id", todayCheckin.id);
+      const { error } = await supabase.from("checkins").update({ training_done: trainingDone, weight: weight ? parseFloat(weight) : null, notes: checkinForm.notes || null }).eq("id", todayCheckin.id);
       if (error) {
         toast({ title: "Erro ao atualizar", description: error.message, variant: "destructive" });
       } else {
         toast({ title: "Check-in atualizado! ✅" });
+        clearCheckinDraft();
         fetchCheckins(student.id);
       }
     } else {
@@ -168,6 +172,7 @@ const StudentDashboard = () => {
         toast({ title: "Erro ao registrar", description: error.message, variant: "destructive" });
       } else {
         toast({ title: "Check-in registrado! 💪" });
+        clearCheckinDraft();
         fetchCheckins(student.id);
       }
     }
@@ -429,7 +434,7 @@ const StudentDashboard = () => {
               </div>
               <div className="space-y-2">
                 <Label className="text-sm text-muted-foreground">Notas do dia</Label>
-                <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Como foi o treino? Disposição, dores..." className="bg-secondary border-border min-h-[80px]" />
+                <Textarea value={checkinForm.notes} onChange={(e) => setCheckinForm({ ...checkinForm, notes: e.target.value })} placeholder="Como foi o treino? Disposição, dores..." className="bg-secondary border-border min-h-[80px]" />
               </div>
               <Button onClick={handleCheckin} disabled={submitting} className="w-full gradient-neon text-white font-semibold h-12 glow-accent">
                 {submitting ? "Salvando..." : todayCheckin ? "Atualizar check-in" : "Registrar check-in"}

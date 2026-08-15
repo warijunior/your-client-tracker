@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useFormDraft } from "@/hooks/useFormDraft";
 
 interface Props {
   studentId: string;
@@ -18,8 +19,12 @@ interface Props {
 const ProtocolForm = ({ studentId, trainerId, type, onClose, onSaved }: Props) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  
+  const draftKey = `draft-protocol-${type}-${studentId}`;
+  const [form, setForm, clearDraft] = useFormDraft(draftKey, {
+    title: "",
+    content: ""
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,14 +34,15 @@ const ProtocolForm = ({ studentId, trainerId, type, onClose, onSaved }: Props) =
       student_id: studentId,
       trainer_id: trainerId,
       type,
-      title,
-      content,
+      title: form.title,
+      content: form.content,
     });
 
     if (error) {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
     } else {
       toast({ title: `${type === "training" ? "Treino" : "Dieta"} salvo! ✅` });
+      clearDraft();
       onSaved();
     }
     setLoading(false);
@@ -73,8 +79,8 @@ Jantar: 200g peixe + batata doce + legumes`;
           <div className="space-y-2">
             <Label className="text-muted-foreground">Título</Label>
             <Input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
               placeholder={type === "training" ? "Ex: Treino A - Peito e Tríceps" : "Ex: Dieta Cutting 2000kcal"}
               className="bg-secondary border-border"
               required
@@ -84,8 +90,8 @@ Jantar: 200g peixe + batata doce + legumes`;
           <div className="space-y-2">
             <Label className="text-muted-foreground">Conteúdo</Label>
             <Textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
+              value={form.content}
+              onChange={(e) => setForm({ ...form, content: e.target.value })}
               placeholder={placeholder}
               className="bg-secondary border-border min-h-[200px] text-sm"
               required

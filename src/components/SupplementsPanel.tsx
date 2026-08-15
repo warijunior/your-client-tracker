@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
+import { useFormDraft } from "@/hooks/useFormDraft";
 import { Loader2, Pill, Plus, Save, Trash2, X } from "lucide-react";
 
 interface Props {
@@ -48,7 +49,7 @@ const SupplementsPanel = ({ studentId, mode, userId }: Props) => {
   const [takenToday, setTakenToday] = useState<Set<string>>(new Set());
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState({ ...emptyForm });
+  const [form, setForm] = useFormDraft(`draft-supplement-${studentId}`, { ...emptyForm });
 
   const load = useCallback(async () => {
     const [supRes, logRes] = await Promise.all([

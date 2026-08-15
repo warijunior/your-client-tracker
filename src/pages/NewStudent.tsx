@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, User, Mail, Cake, Scale, Ruler, Target, HeartPulse, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useFormDraft } from "@/hooks/useFormDraft";
 
 const NewStudent = () => {
   const { user } = useAuth();
@@ -17,7 +18,8 @@ const NewStudent = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [form, setForm] = useState({
+  
+  const [form, setForm, clearDraft] = useFormDraft("draft-new-student", {
     full_name: "",
     email: "",
     age: "",
@@ -68,6 +70,7 @@ const NewStudent = () => {
       setLoading(false);
       setSuccess(true);
       toast({ title: "Aluno cadastrado! 🎉" });
+      clearDraft();
       setTimeout(() => navigate("/"), 700);
     }
   };

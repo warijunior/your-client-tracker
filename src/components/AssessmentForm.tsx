@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useFormDraft } from "@/hooks/useFormDraft";
 
 interface Props {
   studentId: string;
@@ -18,7 +19,10 @@ interface Props {
 const AssessmentForm = ({ studentId, trainerId, onClose, onSaved, initialData }: Props) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({
+  
+  const draftKey = `draft-assessment-${studentId}${initialData?.id ? `-${initialData.id}` : ''}`;
+  
+  const defaultValues = {
     weight: initialData?.weight?.toString() || "", 
     body_fat: initialData?.body_fat?.toString() || "", 
     chest: initialData?.chest?.toString() || "", 
@@ -28,8 +32,17 @@ const AssessmentForm = ({ studentId, trainerId, onClose, onSaved, initialData }:
     thigh: initialData?.thigh?.toString() || "", 
     notes: initialData?.notes || "", 
     assessed_at: initialData?.assessed_at || new Date().toISOString().split("T")[0],
-    evaluation_type: initialData?.evaluation_type || "complete" as "complete" | "simplified",
-  });
+    evaluation_type: (initialData?.evaluation_type || "complete") as "complete" | "simplified",
+  };
+
+  const [form, setForm, clearDraft] = useFormDraft(draftKey, defaultValues);
+
+  // Se initialData mudar (ex: abriu outro registro para editar), atualizamos o estado
+  useEffect(() => {
+    if (initialData?.id) {
+      setForm(defaultValues);
+    }
+  }, [initialData?.id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +71,7 @@ const AssessmentForm = ({ studentId, trainerId, onClose, onSaved, initialData }:
       toast({ title: "Erro", description: error.message, variant: "destructive" });
     } else {
       toast({ title: initialData?.id ? "Avaliação atualizada! ✅" : "Avaliação salva! ✅" });
+      clearDraft();
       onSaved();
     }
     setLoading(false);
