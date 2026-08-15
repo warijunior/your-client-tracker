@@ -119,16 +119,16 @@ const ExamsPanel = ({ studentId, mode, userId }: Props) => {
 
       <div className="flex items-center justify-between p-3 rounded-lg bg-secondary">
         <Label className="text-sm text-foreground">Necessidade de exames periódicos</Label>
-        <Switch checked={required} onCheckedChange={setRequired} />
+        <Switch checked={form.required} onCheckedChange={(v) => setForm({ ...form, required: v })} />
       </div>
 
-      {required && (
+      {form.required && (
         <div className="space-y-3">
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">Observação / orientação</Label>
             <Textarea
-              value={guidance}
-              onChange={(e) => setGuidance(e.target.value)}
+              value={form.guidance}
+              onChange={(e) => setForm({ ...form, guidance: e.target.value })}
               placeholder="Registre a orientação de acompanhamento"
               className="bg-secondary border-border min-h-[80px]"
             />
