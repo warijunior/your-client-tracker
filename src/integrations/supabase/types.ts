@@ -131,6 +131,7 @@ export type Database = {
           id: string
           intensity: string | null
           logged_at: string
+          prescribed_minutes: number | null
           student_id: string
           user_id: string
         }
@@ -141,6 +142,7 @@ export type Database = {
           id?: string
           intensity?: string | null
           logged_at?: string
+          prescribed_minutes?: number | null
           student_id: string
           user_id: string
         }
@@ -151,6 +153,7 @@ export type Database = {
           id?: string
           intensity?: string | null
           logged_at?: string
+          prescribed_minutes?: number | null
           student_id?: string
           user_id?: string
         }
@@ -611,6 +614,7 @@ export type Database = {
           height: number | null
           id: string
           notes: string | null
+          prescribed_cardio_minutes: number | null
           status: string | null
           trainer_id: string
           updated_at: string
@@ -628,6 +632,7 @@ export type Database = {
           height?: number | null
           id?: string
           notes?: string | null
+          prescribed_cardio_minutes?: number | null
           status?: string | null
           trainer_id: string
           updated_at?: string
@@ -645,6 +650,7 @@ export type Database = {
           height?: number | null
           id?: string
           notes?: string | null
+          prescribed_cardio_minutes?: number | null
           status?: string | null
           trainer_id?: string
           updated_at?: string
