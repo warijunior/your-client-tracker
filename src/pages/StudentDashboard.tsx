@@ -12,6 +12,7 @@ import { Dumbbell, LogOut, CheckCircle2, Calendar, TrendingUp, ChevronLeft, Chev
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { XCLogo } from "@/components/XCLogo";
 import { useToast } from "@/hooks/use-toast";
+import { useFormDraft } from "@/hooks/useFormDraft";
 import NotificationBell from "@/components/NotificationBell";
 import ChatWindow from "@/components/ChatWindow";
 import PhotoGallery from "@/components/PhotoGallery";

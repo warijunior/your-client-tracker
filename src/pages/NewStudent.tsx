@@ -70,6 +70,7 @@ const NewStudent = () => {
       setLoading(false);
       setSuccess(true);
       toast({ title: "Aluno cadastrado! 🎉" });
+      clearDraft();
       setTimeout(() => navigate("/"), 700);
     }
   };
