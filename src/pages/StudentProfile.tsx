@@ -206,11 +206,11 @@ const StudentProfile = () => {
       // Vamos tentar buscar em 'profiles' primeiro (se existir campo email) ou via RPC se o sistema tiver.
       // Se não houver campo email em profiles, assumimos que o relacionamento é manual.
       // IMPORTANTE: De acordo com o fluxo Lovable Cloud padrão, buscamos por e-mail na tabela 'profiles'.
-      const { data: profileData, error: profileError } = await supabase
+      const { data: profileData, error: profileError } = await (supabase
         .from("profiles")
-        .select("user_id, full_name")
+        .select("user_id, full_name") as any)
         .filter("email", "eq", student.email)
-        .maybeSingle() as any;
+        .maybeSingle();
 
       if (profileError || !profileData) {
         // Se falhar em profiles, tentamos ver se existe na students (o que seria estranho mas possível se o aluno já criou conta)
