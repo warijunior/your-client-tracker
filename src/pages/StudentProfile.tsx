@@ -206,7 +206,7 @@ const StudentProfile = () => {
       // 1. Localizar conta pelo e-mail usando função RPC segura
       const { data: profileData, error: profileError } = await supabase
         .rpc("search_profile_by_email", { 
-          search_email: student.email.trim() 
+          search_email: student.email.trim().replace(/\.$/, '').trim() 
         });
 
       // Como rpc().single() não existe da mesma forma, pegamos o primeiro item se houver
