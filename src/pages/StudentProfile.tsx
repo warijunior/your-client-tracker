@@ -198,24 +198,26 @@ const StudentProfile = () => {
     setLinking(true);
     try {
       // 1. Localizar conta pelo e-mail
-      // Buscamos na tabela user_roles ou profiles que tenha o email. 
-      // Como Profiles armazena o user_id e a tabela auth.users não é acessível diretamente para busca por email via anon/auth standard sem RPC,
-      // geralmente existe uma tabela de profiles ou o próprio campo email na tabela students é usado.
-      // No Lovable Cloud, os emails ficam na tabela profiles se configurado, ou podemos buscar em user_roles se houver email lá.
-      
-      // Vamos tentar buscar em 'profiles' primeiro (se existir campo email) ou via RPC se o sistema tiver.
-      // Se não houver campo email em profiles, assumimos que o relacionamento é manual.
-      // IMPORTANTE: De acordo com o fluxo Lovable Cloud padrão, buscamos por e-mail na tabela 'profiles'.
+      // Buscamos na tabela 'profiles' que tem o campo email.
+      // IMPORTANTE: O casting para any é necessário pois o tipo gerado pode não ter o campo 'email'
+      // se ele foi adicionado via migração manual e o client.ts não foi regenerado.
       const { data: profileData, error: profileError } = await (supabase
         .from("profiles")
         .select("user_id, full_name") as any)
         .eq("email", student.email)
         .maybeSingle();
 
-      if (profileError || !profileData) {
-        // Se falhar em profiles, tentamos ver se existe na students (o que seria estranho mas possível se o aluno já criou conta)
-        // Na verdade, precisamos do user_id do auth.users.
-        // Se não tivermos acesso direto a auth.users, precisamos que exista um registro em profiles.
+      if (profileError) {
+        console.error("Erro ao buscar perfil:", profileError);
+        toast({
+          title: "Erro na busca",
+          description: "Ocorreu um erro ao consultar o banco de dados.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!profileData) {
         toast({
           title: "Conta não encontrada",
           description: `Não encontramos nenhuma conta criada com o e-mail ${student.email}.`,
