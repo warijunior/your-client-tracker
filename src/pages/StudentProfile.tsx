@@ -197,25 +197,31 @@ const StudentProfile = () => {
 
     setLinking(true);
     try {
-      // 1. Localizar conta pelo e-mail
-      // Buscamos na tabela user_roles ou profiles que tenha o email. 
-      // Como Profiles armazena o user_id e a tabela auth.users não é acessível diretamente para busca por email via anon/auth standard sem RPC,
-      // geralmente existe uma tabela de profiles ou o próprio campo email na tabela students é usado.
-      // No Lovable Cloud, os emails ficam na tabela profiles se configurado, ou podemos buscar em user_roles se houver email lá.
+      console.log("Iniciando busca de conta para o email:", student.email);
       
-      // Vamos tentar buscar em 'profiles' primeiro (se existir campo email) ou via RPC se o sistema tiver.
-      // Se não houver campo email em profiles, assumimos que o relacionamento é manual.
-      // IMPORTANTE: De acordo com o fluxo Lovable Cloud padrão, buscamos por e-mail na tabela 'profiles'.
+      // 1. Localizar conta pelo e-mail
+      // Buscamos na tabela 'profiles' que tem o campo email.
+      // IMPORTANTE: O casting para any é necessário pois o tipo gerado pode não ter o campo 'email'
+      // se ele foi adicionado via migração manual e o client.ts não foi regenerado.
       const { data: profileData, error: profileError } = await (supabase
         .from("profiles")
         .select("user_id, full_name") as any)
         .eq("email", student.email)
         .maybeSingle();
 
-      if (profileError || !profileData) {
-        // Se falhar em profiles, tentamos ver se existe na students (o que seria estranho mas possível se o aluno já criou conta)
-        // Na verdade, precisamos do user_id do auth.users.
-        // Se não tivermos acesso direto a auth.users, precisamos que exista um registro em profiles.
+      if (profileError) {
+        console.error("Erro ao buscar perfil:", profileError);
+        toast({
+          title: "Erro na busca",
+          description: "Ocorreu um erro ao consultar o banco de dados.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log("Resultado da busca de perfil:", profileData);
+
+      if (!profileData) {
         toast({
           title: "Conta não encontrada",
           description: `Não encontramos nenhuma conta criada com o e-mail ${student.email}.`,
@@ -225,11 +231,16 @@ const StudentProfile = () => {
       }
 
       // 2. Verificar se já está vinculado a outro aluno
-      const { data: existingLink } = await supabase
+      const { data: existingLink, error: existingLinkError } = await supabase
         .from("students")
         .select("full_name")
         .eq("user_id", profileData.user_id)
         .maybeSingle();
+
+      if (existingLinkError) {
+        console.error("Erro ao verificar vínculo existente:", existingLinkError);
+        throw existingLinkError;
+      }
 
       if (existingLink) {
         toast({
@@ -249,9 +260,10 @@ const StudentProfile = () => {
       setShowLinkConfirm(true);
 
     } catch (err: any) {
+      console.error("Exceção capturada em handleLinkAccount:", err);
       toast({
         title: "Erro ao buscar conta",
-        description: err.message,
+        description: err.message || "Ocorreu um erro inesperado.",
         variant: "destructive",
       });
     } finally {
