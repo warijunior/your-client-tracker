@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,11 +17,13 @@ interface Notification {
   message: string;
   type: string;
   read: boolean;
+  link?: string | null;
   created_at: string;
 }
 
 const NotificationBell = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
 
@@ -67,6 +70,9 @@ const NotificationBell = () => {
     chat: "💬",
     payment: "💳",
     info: "ℹ️",
+    checkin: "✅",
+    cardio: "🏃",
+    hydration: "💧",
   };
 
   return (
@@ -97,10 +103,16 @@ const NotificationBell = () => {
             notifications.map((n) => (
               <div
                 key={n.id}
-                className={`px-4 py-3 border-b border-border/50 ${!n.read ? "bg-primary/5" : ""}`}
+                onClick={() => {
+                  if (n.link) {
+                    navigate(n.link);
+                    setOpen(false);
+                  }
+                }}
+                className={`px-4 py-3 border-b border-border/50 cursor-pointer hover:bg-white/5 transition-colors ${!n.read ? "bg-primary/5" : ""}`}
               >
                 <div className="flex items-start gap-2">
-                  <span className="text-sm">{typeIcons[n.type] || "📌"}</span>
+                  <span className="text-sm shrink-0">{typeIcons[n.type] || "📌"}</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground">{n.title}</p>
                     <p className="text-xs text-muted-foreground mt-0.5">{n.message}</p>
