@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, User, Activity, FileText, Plus, Calendar, Camera, DollarSign, MessageCircle, Trash2, Dumbbell, Upload, Loader2, LayoutDashboard, Droplets, Pill, FlaskConical, ClipboardList, Timer } from "lucide-react";
+import { ArrowLeft, User, Activity, FileText, Plus, Calendar, Camera, DollarSign, MessageCircle, Trash2, Dumbbell, Upload, Loader2, LayoutDashboard, Droplets, Pill, FlaskConical, ClipboardList, Timer, Link, Link2, AlertCircle, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AssessmentForm from "@/components/AssessmentForm";
@@ -24,6 +24,7 @@ import CardioPanel from "@/components/CardioPanel";
 interface Student {
   id: string;
   full_name: string;
+  email: string | null;
   age: number | null;
   weight: number | null;
   height: number | null;
@@ -32,6 +33,7 @@ interface Student {
   notes: string | null;
   user_id: string | null;
   avatar_url?: string | null;
+  updated_at?: string;
 }
 
 interface Assessment {
@@ -81,6 +83,9 @@ const StudentProfile = () => {
   const [showAppointmentForm, setShowAppointmentForm] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [protocolType, setProtocolType] = useState<"diet" | "training">("training");
+  const [linking, setLinking] = useState(false);
+  const [showLinkConfirm, setShowLinkConfirm] = useState(false);
+  const [foundAccount, setFoundAccount] = useState<{ user_id: string; full_name: string | null; email: string } | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -178,6 +183,107 @@ const StudentProfile = () => {
       .gte("appointment_date", new Date().toISOString().split("T")[0])
       .order("appointment_date", { ascending: true });
     if (data) setAppointments(data);
+  };
+
+  const handleLinkAccount = async () => {
+    if (!student?.email) {
+      toast({
+        title: "E-mail não cadastrado",
+        description: "Cadastre um e-mail para o aluno antes de tentar vincular.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLinking(true);
+    try {
+      // 1. Localizar conta pelo e-mail
+      // Buscamos na tabela user_roles ou profiles que tenha o email. 
+      // Como Profiles armazena o user_id e a tabela auth.users não é acessível diretamente para busca por email via anon/auth standard sem RPC,
+      // geralmente existe uma tabela de profiles ou o próprio campo email na tabela students é usado.
+      // No Lovable Cloud, os emails ficam na tabela profiles se configurado, ou podemos buscar em user_roles se houver email lá.
+      
+      // Vamos tentar buscar em 'profiles' primeiro (se existir campo email) ou via RPC se o sistema tiver.
+      // Se não houver campo email em profiles, assumimos que o relacionamento é manual.
+      // IMPORTANTE: De acordo com o fluxo Lovable Cloud padrão, buscamos por e-mail na tabela 'profiles'.
+      const { data: profileData, error: profileError } = await (supabase
+        .from("profiles")
+        .select("user_id, full_name") as any)
+        .eq("email", student.email)
+        .maybeSingle();
+
+      if (profileError || !profileData) {
+        // Se falhar em profiles, tentamos ver se existe na students (o que seria estranho mas possível se o aluno já criou conta)
+        // Na verdade, precisamos do user_id do auth.users.
+        // Se não tivermos acesso direto a auth.users, precisamos que exista um registro em profiles.
+        toast({
+          title: "Conta não encontrada",
+          description: `Não encontramos nenhuma conta criada com o e-mail ${student.email}.`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // 2. Verificar se já está vinculado a outro aluno
+      const { data: existingLink } = await supabase
+        .from("students")
+        .select("full_name")
+        .eq("user_id", profileData.user_id)
+        .maybeSingle();
+
+      if (existingLink) {
+        toast({
+          title: "Conta já vinculada",
+          description: `Esta conta já está vinculada ao aluno ${existingLink.full_name}.`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // 3. Preparar confirmação
+      setFoundAccount({
+        user_id: profileData.user_id,
+        full_name: profileData.full_name,
+        email: student.email
+      });
+      setShowLinkConfirm(true);
+
+    } catch (err: any) {
+      toast({
+        title: "Erro ao buscar conta",
+        description: err.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLinking(false);
+    }
+  };
+
+  const confirmLink = async () => {
+    if (!foundAccount || !student) return;
+
+    setLinking(true);
+    try {
+      const { error } = await supabase
+        .from("students")
+        .update({ user_id: foundAccount.user_id })
+        .eq("id", student.id);
+
+      if (error) throw error;
+
+      toast({ title: "Conta vinculada com sucesso! 🟢" });
+      setShowLinkConfirm(false);
+      setFoundAccount(null);
+      fetchStudent();
+    } catch (err: any) {
+      toast({
+        title: "Erro ao vincular",
+        description: err.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLinking(false);
+    }
   };
 
   if (!student) {
@@ -384,6 +490,56 @@ const StudentProfile = () => {
                 </div>
               </div>
             </div>
+            
+            {/* Acesso do Aluno Section */}
+            <div className="glass-card p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                    <Link2 className="w-4 h-4 text-primary" /> ACESSO DO ALUNO
+                  </h3>
+                </div>
+                {student.user_id ? (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-bold flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" /> CONTA VINCULADA
+                  </span>
+                ) : (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/10 text-yellow-500 font-bold flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" /> NÃO VINCULADA
+                  </span>
+                )}
+              </div>
+
+              <div className="space-y-3">
+                <div className="p-3 rounded-lg bg-secondary/50 border border-white/5">
+                  <p className="text-[11px] text-muted-foreground mb-1">E-mail de acesso</p>
+                  <p className="text-sm font-medium text-foreground">{student.email || "Não informado"}</p>
+                </div>
+
+                {!student.user_id && (
+                  <Button 
+                    variant="outline" 
+                    className="w-full border-primary/20 hover:border-primary/40 text-xs h-9"
+                    onClick={handleLinkAccount}
+                    disabled={linking}
+                  >
+                    {linking ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" />
+                    ) : (
+                      <Link className="w-3.5 h-3.5 mr-2 text-primary" />
+                    )}
+                    VINCULAR CONTA EXISTENTE
+                  </Button>
+                )}
+                
+                {student.user_id && (
+                  <p className="text-[10px] text-muted-foreground text-center italic">
+                    O aluno já possui acesso ao sistema com este e-mail.
+                  </p>
+                )}
+              </div>
+            </div>
+
             <FollowUpPanel studentId={id!} />
           </TabsContent>
 
@@ -550,6 +706,52 @@ const StudentProfile = () => {
       )}
       {showAppointmentForm && (
         <AppointmentForm studentId={id!} trainerId={user!.id} onClose={() => setShowAppointmentForm(false)} onSaved={() => { setShowAppointmentForm(false); fetchAppointments(); }} />
+      )}
+
+      {/* Modal de Confirmação de Vínculo */}
+      {showLinkConfirm && foundAccount && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="glass-card w-full max-w-sm p-6 space-y-6 animate-in fade-in zoom-in duration-200">
+            <div className="text-center space-y-2">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+                <User className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-bold text-foreground">Conta encontrada!</h3>
+              <p className="text-sm text-muted-foreground">
+                Encontramos uma conta criada com este e-mail. Deseja vincular esta conta ao cadastro deste aluno?
+              </p>
+            </div>
+
+            <div className="p-4 rounded-xl bg-secondary/50 border border-white/5 space-y-3">
+              <div>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Nome na conta</p>
+                <p className="text-sm font-bold text-foreground">{foundAccount.full_name || "—"}</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">E-mail</p>
+                <p className="text-sm font-bold text-foreground">{foundAccount.email}</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Button 
+                className="w-full gradient-primary text-white font-bold h-11"
+                onClick={confirmLink}
+                disabled={linking}
+              >
+                {linking ? <Loader2 className="w-4 h-4 animate-spin" /> : "SIM, VINCULAR AGORA"}
+              </Button>
+              <Button 
+                variant="ghost" 
+                className="w-full text-muted-foreground hover:text-foreground"
+                onClick={() => { setShowLinkConfirm(false); setFoundAccount(null); }}
+                disabled={linking}
+              >
+                CANCELAR
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
