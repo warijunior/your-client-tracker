@@ -206,7 +206,7 @@ const StudentProfile = () => {
       const { data: profileData, error: profileError } = await (supabase
         .from("profiles")
         .select("user_id, full_name") as any)
-        .eq("email", student.email)
+        .eq("email", student.email.trim())
         .maybeSingle();
 
       if (profileError) {
