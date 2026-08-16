@@ -197,6 +197,8 @@ const StudentProfile = () => {
 
     setLinking(true);
     try {
+      console.log("Iniciando busca de conta para o email:", student.email);
+      
       // 1. Localizar conta pelo e-mail
       // Buscamos na tabela 'profiles' que tem o campo email.
       // IMPORTANTE: O casting para any é necessário pois o tipo gerado pode não ter o campo 'email'
@@ -217,6 +219,8 @@ const StudentProfile = () => {
         return;
       }
 
+      console.log("Resultado da busca de perfil:", profileData);
+
       if (!profileData) {
         toast({
           title: "Conta não encontrada",
@@ -227,11 +231,16 @@ const StudentProfile = () => {
       }
 
       // 2. Verificar se já está vinculado a outro aluno
-      const { data: existingLink } = await supabase
+      const { data: existingLink, error: existingLinkError } = await supabase
         .from("students")
         .select("full_name")
         .eq("user_id", profileData.user_id)
         .maybeSingle();
+
+      if (existingLinkError) {
+        console.error("Erro ao verificar vínculo existente:", existingLinkError);
+        throw existingLinkError;
+      }
 
       if (existingLink) {
         toast({
@@ -251,9 +260,10 @@ const StudentProfile = () => {
       setShowLinkConfirm(true);
 
     } catch (err: any) {
+      console.error("Exceção capturada em handleLinkAccount:", err);
       toast({
         title: "Erro ao buscar conta",
-        description: err.message,
+        description: err.message || "Ocorreu um erro inesperado.",
         variant: "destructive",
       });
     } finally {
