@@ -209,8 +209,8 @@ const StudentProfile = () => {
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
         .select("user_id, full_name")
-        .eq("email" as any, student.email) // Tentativa no campo email
-        .maybeSingle();
+        .filter("email", "eq", student.email)
+        .maybeSingle() as any;
 
       if (profileError || !profileData) {
         // Se falhar em profiles, tentamos ver se existe na students (o que seria estranho mas possível se o aluno já criou conta)
