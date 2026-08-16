@@ -190,7 +190,7 @@ const StudentDashboard = () => {
     if (!student || !user) return;
 
     try {
-      const fileExt = file.name.split(".").pop();
+      const fileExt = file.name.split(".").pop()?.toLowerCase();
       const fileName = `${student.id}-${Date.now()}.${fileExt}`;
       const filePath = `${user.id}/${fileName}`;
 
