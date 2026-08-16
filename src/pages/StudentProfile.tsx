@@ -99,12 +99,13 @@ const StudentProfile = () => {
   const fetchStudent = async () => {
     const { data } = await supabase.from("students").select("*").eq("id", id!).single();
     if (data && data.avatar_url) {
-      // If it's a relative path, construct the public URL with cache busting
       if (!data.avatar_url.startsWith('http')) {
         const { data: { publicUrl } } = supabase.storage
           .from("avatars")
           .getPublicUrl(data.avatar_url);
-        data.avatar_url = `${publicUrl}?t=${new Date(data.updated_at || '').getTime()}`;
+        // Use current time as fallback if updated_at is missing to ensure fresh URL
+        const timestamp = data.updated_at ? new Date(data.updated_at).getTime() : Date.now();
+        data.avatar_url = `${publicUrl}?t=${timestamp}`;
       }
     }
     if (data) setStudent(data);

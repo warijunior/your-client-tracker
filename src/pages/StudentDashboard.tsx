@@ -106,7 +106,8 @@ const StudentDashboard = () => {
         const { data: { publicUrl } } = supabase.storage
           .from("avatars")
           .getPublicUrl(studentData.avatar_url);
-        studentData.avatar_url = `${publicUrl}?t=${new Date(studentData.updated_at || '').getTime()}`;
+        const timestamp = studentData.updated_at ? new Date(studentData.updated_at).getTime() : Date.now();
+        studentData.avatar_url = `${publicUrl}?t=${timestamp}`;
       }
       setStudent(studentData);
       await Promise.all([

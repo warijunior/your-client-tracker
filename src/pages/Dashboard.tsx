@@ -117,7 +117,8 @@ const Dashboard = () => {
           const { data: { publicUrl } } = supabase.storage
             .from("avatars")
             .getPublicUrl(avatarUrl);
-          avatarUrl = `${publicUrl}?t=${new Date(s.updated_at || '').getTime()}`;
+          const timestamp = s.updated_at ? new Date(s.updated_at).getTime() : Date.now();
+          avatarUrl = `${publicUrl}?t=${timestamp}`;
         }
         return {
           ...s,
