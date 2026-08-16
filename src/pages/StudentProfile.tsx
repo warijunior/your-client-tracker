@@ -203,11 +203,14 @@ const StudentProfile = () => {
       // Buscamos na tabela 'profiles' que tem o campo email.
       // IMPORTANTE: O casting para any é necessário pois o tipo gerado pode não ter o campo 'email'
       // se ele foi adicionado via migração manual e o client.ts não foi regenerado.
-      const { data: profileData, error: profileError } = await (supabase
-        .from("profiles")
-        .select("user_id, full_name") as any)
-        .eq("email", student.email.trim())
-        .maybeSingle();
+      // 1. Localizar conta pelo e-mail usando função RPC segura
+      const { data: profileData, error: profileError } = await supabase
+        .rpc("search_profile_by_email", { 
+          search_email: student.email.trim() 
+        });
+
+      // Como rpc().single() não existe da mesma forma, pegamos o primeiro item se houver
+      const profile = Array.isArray(profileData) ? profileData[0] : profileData;
 
       if (profileError) {
         console.error("Erro ao buscar perfil:", profileError);
@@ -219,9 +222,9 @@ const StudentProfile = () => {
         return;
       }
 
-      console.log("Resultado da busca de perfil:", profileData);
+      console.log("Resultado da busca de perfil:", profile);
 
-      if (!profileData) {
+      if (!profile) {
         toast({
           title: "Conta não encontrada",
           description: `Não encontramos nenhuma conta criada com o e-mail ${student.email}.`,
@@ -234,7 +237,7 @@ const StudentProfile = () => {
       const { data: existingLink, error: existingLinkError } = await supabase
         .from("students")
         .select("full_name")
-        .eq("user_id", profileData.user_id)
+        .eq("user_id", profile.user_id)
         .maybeSingle();
 
       if (existingLinkError) {
@@ -253,8 +256,8 @@ const StudentProfile = () => {
 
       // 3. Preparar confirmação
       setFoundAccount({
-        user_id: profileData.user_id,
-        full_name: profileData.full_name,
+        user_id: profile.user_id,
+        full_name: profile.full_name,
         email: student.email
       });
       setShowLinkConfirm(true);
