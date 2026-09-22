@@ -50,6 +50,33 @@ const Auth = () => {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const target = forgotEmail.trim().toLowerCase();
+    if (!/^\S+@\S+\.\S+$/.test(target)) {
+      toast({ title: "E-mail inválido", description: "Digite um e-mail válido.", variant: "destructive" });
+      return;
+    }
+    setSending(true);
+    try {
+      await supabase.auth.resetPasswordForEmail(target, {
+        redirectTo: `${window.location.origin}/redefinir-senha`,
+      });
+    } catch {
+      // mensagem neutra: nunca revelar se o e-mail existe
+    } finally {
+      setSending(false);
+      setForgotOpen(false);
+      setForgotEmail("");
+      toast({
+        title: "Verifique seu e-mail",
+        description: "Se este e-mail estiver cadastrado, você receberá as instruções para redefinir sua senha.",
+      });
+    }
+  };
+
+
+
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-black theme-neon">
