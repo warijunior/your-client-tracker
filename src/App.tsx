@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import NewStudent from "./pages/NewStudent";
 import StudentProfile from "./pages/StudentProfile";
 import InviteTrainer from "./pages/InviteTrainer";
@@ -29,6 +30,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<ProtectedRoute><RoleRouter /></ProtectedRoute>} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/redefinir-senha" element={<ResetPassword />} />
             <Route path="/students/new" element={<ProtectedRoute requiredRole="admin"><NewStudent /></ProtectedRoute>} />
             <Route path="/students/:id" element={<ProtectedRoute requiredRole="admin"><StudentProfile /></ProtectedRoute>} />
             <Route path="/students/:id/workouts" element={<ProtectedRoute requiredRole="staff"><StudentWorkouts /></ProtectedRoute>} />

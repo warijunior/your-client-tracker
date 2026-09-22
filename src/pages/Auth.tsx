@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Mail, Lock, User } from "lucide-react";
 import { XCLogo } from "@/components/XCLogo";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -14,6 +16,9 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [forgotOpen, setForgotOpen] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [sending, setSending] = useState(false);
   const { signIn, signUp, user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -44,6 +49,33 @@ const Auth = () => {
       setLoading(false);
     }
   };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const target = forgotEmail.trim().toLowerCase();
+    if (!/^\S+@\S+\.\S+$/.test(target)) {
+      toast({ title: "E-mail inválido", description: "Digite um e-mail válido.", variant: "destructive" });
+      return;
+    }
+    setSending(true);
+    try {
+      await supabase.auth.resetPasswordForEmail(target, {
+        redirectTo: `${window.location.origin}/redefinir-senha`,
+      });
+    } catch {
+      // mensagem neutra: nunca revelar se o e-mail existe
+    } finally {
+      setSending(false);
+      setForgotOpen(false);
+      setForgotEmail("");
+      toast({
+        title: "Verifique seu e-mail",
+        description: "Se este e-mail estiver cadastrado, você receberá as instruções para redefinir sua senha.",
+      });
+    }
+  };
+
+
 
 
   return (
@@ -121,6 +153,46 @@ const Auth = () => {
             {loading ? "Carregando..." : isLogin ? "Entrar" : "Criar conta"}
           </Button>
         </form>
+
+        {isLogin && (
+          <p className="text-center text-sm">
+            <button
+              type="button"
+              onClick={() => setForgotOpen(true)}
+              className="text-primary font-medium hover:underline"
+            >
+              Esqueci minha senha
+            </button>
+          </p>
+        )}
+
+        <Dialog open={forgotOpen} onOpenChange={setForgotOpen}>
+          <DialogContent className="bg-card border-border">
+            <DialogHeader>
+              <DialogTitle>Recuperar senha</DialogTitle>
+              <DialogDescription>
+                Informe o e-mail cadastrado para receber o link de redefinição de senha.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div className="relative">
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="email"
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                  placeholder="seu@email.com"
+                  className="pl-10 bg-secondary border-border"
+                  required
+                />
+              </div>
+              <Button type="submit" disabled={sending} className="w-full gradient-primary text-primary-foreground font-semibold h-12">
+                {sending ? "Enviando..." : "Enviar link de recuperação"}
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+
 
         <p className="text-center text-sm text-muted-foreground">
           {isLogin ? "Não tem conta?" : "Já tem conta?"}{" "}
