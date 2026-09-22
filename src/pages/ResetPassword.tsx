@@ -20,30 +20,67 @@ const ResetPassword = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    let done = false;
+    let cancelled = false;
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (cancelled) return;
       if (session || event === "PASSWORD_RECOVERY") {
-        done = true;
         setLinkValid(true);
         setReady(true);
       }
     });
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        done = true;
-        setLinkValid(true);
-      }
+    const finish = (valid: boolean) => {
+      if (cancelled) return;
+      setLinkValid(valid);
       setReady(true);
-    });
+      // limpa tokens da URL para evitar reuso acidental
+      window.history.replaceState({}, "", window.location.pathname);
+    };
 
-    const timer = setTimeout(() => {
-      if (!done) setReady(true);
-    }, 2500);
+    const resolve = async () => {
+      const url = new URL(window.location.href);
+      const hash = new URLSearchParams(url.hash.replace(/^#/, ""));
+      const query = url.searchParams;
+
+      const errorCode = hash.get("error") || hash.get("error_code") || query.get("error") || query.get("error_code");
+      if (errorCode) return finish(false);
+
+      // 1) Link implícito: #access_token=...&refresh_token=...&type=recovery
+      const accessToken = hash.get("access_token");
+      const refreshToken = hash.get("refresh_token");
+      if (accessToken && refreshToken) {
+        const { error } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+        return finish(!error);
+      }
+
+      // 2) Link com token_hash (templates novos) → verifyOtp
+      const tokenHash = query.get("token_hash") || hash.get("token_hash") || query.get("token") || hash.get("token");
+      const type = (query.get("type") || hash.get("type") || "recovery") as "recovery";
+      if (tokenHash) {
+        const { error } = await supabase.auth.verifyOtp({ type, token_hash: tokenHash });
+        return finish(!error);
+      }
+
+      // 3) Link PKCE: ?code=...
+      const code = query.get("code");
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        return finish(!error);
+      }
+
+      // 4) Sessão já estabelecida pelo cliente (detectSessionInUrl)
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) return finish(true);
+
+      if (!cancelled) setReady(true);
+    };
+
+    resolve();
 
     return () => {
+      cancelled = true;
       subscription.unsubscribe();
-      clearTimeout(timer);
     };
   }, []);
 
