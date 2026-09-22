@@ -154,6 +154,46 @@ const Auth = () => {
           </Button>
         </form>
 
+        {isLogin && (
+          <p className="text-center text-sm">
+            <button
+              type="button"
+              onClick={() => setForgotOpen(true)}
+              className="text-primary font-medium hover:underline"
+            >
+              Esqueci minha senha
+            </button>
+          </p>
+        )}
+
+        <Dialog open={forgotOpen} onOpenChange={setForgotOpen}>
+          <DialogContent className="bg-card border-border">
+            <DialogHeader>
+              <DialogTitle>Recuperar senha</DialogTitle>
+              <DialogDescription>
+                Informe o e-mail cadastrado para receber o link de redefinição de senha.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div className="relative">
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="email"
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                  placeholder="seu@email.com"
+                  className="pl-10 bg-secondary border-border"
+                  required
+                />
+              </div>
+              <Button type="submit" disabled={sending} className="w-full gradient-primary text-primary-foreground font-semibold h-12">
+                {sending ? "Enviando..." : "Enviar link de recuperação"}
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+
         <p className="text-center text-sm text-muted-foreground">
           {isLogin ? "Não tem conta?" : "Já tem conta?"}{" "}
           <button
