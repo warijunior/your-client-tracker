@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Mail, Lock, User } from "lucide-react";
 import { XCLogo } from "@/components/XCLogo";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);

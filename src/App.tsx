@@ -30,6 +30,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<ProtectedRoute><RoleRouter /></ProtectedRoute>} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/redefinir-senha" element={<ResetPassword />} />
             <Route path="/students/new" element={<ProtectedRoute requiredRole="admin"><NewStudent /></ProtectedRoute>} />
             <Route path="/students/:id" element={<ProtectedRoute requiredRole="admin"><StudentProfile /></ProtectedRoute>} />
             <Route path="/students/:id/workouts" element={<ProtectedRoute requiredRole="staff"><StudentWorkouts /></ProtectedRoute>} />
